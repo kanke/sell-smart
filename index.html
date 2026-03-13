@@ -1,362 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sell Smart — AI Resale Listings</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #141414; --bg2: #1c1c1c; --surface: #1e1e1e; --surface2: #252525;
-  --surface3: #2e2a3a; --border: #2e2e2e; --border2: #3a3a3a;
-  --text: #fff; --text2: #a0a0a0; --text3: #555;
-  --pink: #e84dbd; --purple: #7c3aed;
-  --pu-bg: #201830; --pu-border: #4a3570;
-  --radius: 16px; --radius-sm: 10px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-}
-html { font-size: 16px; }
-body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sell Smart — AI Resale Listings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #141414; --bg2: #1c1c1c; --surface: #1e1e1e; --surface2: #252525;
+      --surface3: #2e2a3a; --border: #2e2e2e; --border2: #3a3a3a;
+      --text: #fff; --text2: #a0a0a0; --text3: #666;
+      --pink: #e84dbd; --purple: #7c3aed;
+      --pu-bg: #201830; --pu-border: #4a3570;
+      --radius: 16px; --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --accent: #7c3aed;
+      --accent-soft: rgba(124,58,237,0.18);
+    }
+    html { font-size: 16px; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-/* HEADER */
-.header { background: var(--bg); border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
-.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.logo-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #e84dbd); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; font-weight: 800; }
-.logo-text { font-size: 1rem; font-weight: 700; color: var(--text); }
-.header-controls { display: flex; align-items: center; gap: 8px; }
-.hsel { position: relative; }
-.hsel select { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 6px 26px 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; outline: none; -webkit-appearance: none; appearance: none; }
-.hsel::after { content: '▾'; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: 0.68rem; color: var(--text2); pointer-events: none; }
+    /* HEADER */
+    .header { background: var(--bg); border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+    .logo-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #e84dbd); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; font-weight: 800; }
+    .logo-text { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .header-controls { display: flex; align-items: center; gap: 8px; }
+    .hsel { position: relative; display: inline-flex; align-items: center; }
+    .hsel::after { display: none !important; content: none !important; }
+    .hsel select {
+      background: var(--surface2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 1l3.5 3L8 1' stroke='%23777' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") no-repeat right 9px center;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 0 26px 0 10px;
+      height: 34px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      line-height: 34px;
+    }
+    @media (max-width: 480px) { .hsel.currency-sel { display: none; } }
 
-/* MAIN */
-.main { max-width: 680px; margin: 0 auto; padding: 48px 24px 100px; }
+    /* MAIN */
+    .main { max-width: 680px; margin: 0 auto; padding: 48px 24px 100px; }
 
-/* HERO */
-.hero { text-align: center; margin-bottom: 40px; }
-.hero-icon-outer { position: relative; display: inline-block; margin-bottom: 20px; }
-.hero-icon { width: 76px; height: 76px; background: linear-gradient(145deg, #2d1f50 0%, #4a2080 60%, #2d1f50 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 48px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1); margin: 0 auto; }
-.hero-sparkle { position: absolute; font-size: 1.1rem; animation: heroFloat 3s ease-in-out infinite; }
-.hero-sparkle.s1 { top: -10px; left: -8px; animation-delay: 0s; }
-.hero-sparkle.s2 { bottom: -6px; right: -10px; animation-delay: 1.5s; }
-@keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
-.hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
-.hero p { font-size: 0.92rem; color: var(--text2); line-height: 1.65; max-width: 380px; margin: 0 auto; }
+    /* HERO */
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero-icon-outer { position: relative; display: inline-block; margin-bottom: 20px; }
+    .hero-icon { width: 76px; height: 76px; background: linear-gradient(145deg, #2d1f50 0%, #4a2080 60%, #2d1f50 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 48px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1); margin: 0 auto; }
+    .hero-sparkle { position: absolute; font-size: 1.1rem; animation: heroFloat 3s ease-in-out infinite; }
+    .hero-sparkle.s1 { top: -10px; left: -8px; animation-delay: 0s; }
+    .hero-sparkle.s2 { bottom: -6px; right: -10px; animation-delay: 1.5s; }
+    @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 12px; }
+    .hero p { font-size: 0.92rem; color: var(--text2); line-height: 1.65; max-width: 380px; margin: 0 auto; }
 
-/* UPLOAD ZONE */
-#fileInput { display: none; }
-.upload-zone { background: var(--pu-bg); border: 2px dashed var(--pu-border); border-radius: var(--radius); padding: 40px 32px; text-align: center; cursor: pointer; transition: all 0.25s; margin-bottom: 16px; user-select: none; }
-.upload-zone:hover, .upload-zone.drag-over { background: #2d2048; border-color: #8b5cf6; }
-.upload-zone.drag-over { border-style: solid; }
-.upload-zone.at-limit { border-color: #f59e0b; background: rgba(245,158,11,0.07); cursor: not-allowed; }
-.upload-icon { width: 52px; height: 52px; background: linear-gradient(135deg, #e84dbd, #f472b6); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; box-shadow: 0 4px 20px rgba(232,77,189,0.4); }
-.upload-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 5px; pointer-events: none; }
-.upload-zone p { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; pointer-events: none; }
-.upload-meta { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-.upload-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; padding: 4px 12px; font-size: 0.73rem; color: var(--text2); pointer-events: none; }
-.photo-counter { display: none; align-items: center; gap: 6px; border-radius: 100px; padding: 4px 12px; font-size: 0.73rem; font-weight: 600; pointer-events: none; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.35); color: #a78bfa; }
-.photo-counter.visible { display: inline-flex; }
-.photo-counter.warn { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); color: #fbbf24; }
-.counter-bar { width: 40px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 100px; overflow: hidden; }
-.counter-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #e84dbd); border-radius: 100px; transition: width 0.3s; }
-.counter-fill.warn { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+    /* UPLOAD ZONE */
+    #fileInput { display: none; }
+    .upload-zone { background: var(--pu-bg); border: 2px dashed var(--pu-border); border-radius: var(--radius); padding: 40px 32px; text-align: center; cursor: pointer; transition: all 0.25s; margin-bottom: 16px; user-select: none; }
+    .upload-zone:hover, .upload-zone.drag-over { background: #2d2048; border-color: #8b5cf6; }
+    .upload-zone.drag-over { border-style: solid; }
+    .upload-zone.at-limit { border-color: #f59e0b; background: rgba(245,158,11,0.07); cursor: not-allowed; }
+    .upload-icon { width: 52px; height: 52px; background: linear-gradient(135deg, #e84dbd, #f472b6); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; box-shadow: 0 4px 20px rgba(232,77,189,0.4); }
+    .upload-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 5px; pointer-events: none; }
+    .upload-zone p { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; pointer-events: none; }
+    .upload-meta { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .upload-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; padding: 4px 12px; font-size: 0.73rem; color: var(--text2); pointer-events: none; }
+    .photo-counter { display: none; align-items: center; gap: 6px; border-radius: 100px; padding: 4px 12px; font-size: 0.73rem; font-weight: 600; pointer-events: none; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.35); color: #a78bfa; }
+    .photo-counter.visible { display: inline-flex; }
+    .photo-counter.warn { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+    .counter-bar { width: 40px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 100px; overflow: hidden; }
+    .counter-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #e84dbd); border-radius: 100px; transition: width 0.3s; }
+    .counter-fill.warn { background: linear-gradient(90deg, #f59e0b, #ef4444); }
 
-/* PHOTOS */
-.photos-section { margin-bottom: 16px; }
-.photos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.photos-label { font-size: 0.73rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; }
-.clear-btn { background: none; border: none; color: var(--text3); font-size: 0.78rem; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
-.clear-btn:hover { color: #f87171; }
-.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 7px; }
-.photo-thumb { aspect-ratio: 1; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: transform 0.15s; }
-.photo-thumb:hover { transform: scale(1.04); }
-.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-thumb .rm { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background: rgba(0,0,0,0.8); border: none; border-radius: 50%; color: #fff; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
-.photo-thumb:hover .rm { opacity: 1; }
+    /* PHOTOS */
+    .photos-section { margin-bottom: 16px; }
+    .photos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .photos-label { font-size: 0.73rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; }
+    .clear-btn { background: none; border: none; color: var(--text3); font-size: 0.78rem; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .clear-btn:hover { color: #f87171; }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 7px; }
+    .photo-thumb { aspect-ratio: 1; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: transform 0.15s; }
+    .photo-thumb:hover { transform: scale(1.04); }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-thumb .rm { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background: rgba(0,0,0,0.8); border: none; border-radius: 50%; color: #fff; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
+    .photo-thumb:hover .rm { opacity: 1; }
 
-/* GENERATE */
-.gen-btn { width: 100%; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #e84dbd 100%); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 24px; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(124,58,237,0.4); letter-spacing: -0.01em; }
-.gen-btn:hover:not(:disabled) { box-shadow: 0 6px 28px rgba(124,58,237,0.55); transform: translateY(-1px); }
-.gen-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    /* GENERATE */
+    .gen-btn { width: 100%; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #e84dbd 100%); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 24px; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; box-shadow: 0 4px 20px rgba(124,58,237,0.4); letter-spacing: -0.01em; }
+    .gen-btn:hover:not(:disabled) { box-shadow: 0 6px 28px rgba(124,58,237,0.55); transform: translateY(-1px); }
+    .gen-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
-/* BANNERS */
-.banner { border-radius: var(--radius-sm); padding: 13px 16px; margin-bottom: 16px; font-size: 0.84rem; display: none; gap: 10px; line-height: 1.55; align-items: flex-start; }
-.banner.show { display: flex; }
-.banner-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
-.banner-body { flex: 1; }
-.banner-title { font-weight: 700; margin-bottom: 2px; }
-.banner-msg { opacity: 0.85; font-size: 0.82rem; }
-.banner-dismiss { flex-shrink: 0; background: none; border: none; cursor: pointer; color: inherit; opacity: 0.5; font-size: 1rem; padding: 0; }
-.banner-dismiss:hover { opacity: 1; }
-.err-banner { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
-.warn-banner { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; }
+    /* IMPROVEMENT 1: Platform meta as styled pill row */
+    .platform-meta { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 0 0 20px; }
+    .platform-hint-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); border-radius: 100px; padding: 4px 12px; font-size: 0.74rem; font-weight: 500; color: #a78bfa; transition: all 0.2s; }
+    .platform-tone-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 100px; padding: 4px 12px; font-size: 0.74rem; color: var(--text3); }
 
-/* LOADING */
-.loading-state { text-align: center; padding: 56px 24px; }
-.spinner { width: 44px; height: 44px; border: 3px solid var(--border2); border-top-color: #e84dbd; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 18px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-state h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-.loading-state p { font-size: 0.84rem; color: var(--text2); margin-bottom: 14px; }
-.prog-track { width: 200px; height: 4px; background: var(--border2); border-radius: 100px; overflow: hidden; margin: 0 auto 6px; }
-.prog-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #e84dbd); border-radius: 100px; width: 0%; transition: width 0.4s ease; }
-.prog-label { font-size: 0.72rem; color: var(--text3); }
+    /* BANNERS */
+    .banner { border-radius: var(--radius-sm); padding: 13px 16px; margin-bottom: 16px; font-size: 0.84rem; display: none; gap: 10px; line-height: 1.55; align-items: flex-start; }
+    .banner.show { display: flex; }
+    .banner-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+    .banner-body { flex: 1; }
+    .banner-title { font-weight: 700; margin-bottom: 2px; }
+    .banner-msg { opacity: 0.85; font-size: 0.82rem; }
+    .banner-dismiss { flex-shrink: 0; background: none; border: none; cursor: pointer; color: inherit; opacity: 0.5; font-size: 1rem; padding: 0; }
+    .banner-dismiss:hover { opacity: 1; }
+    .err-banner { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+    .warn-banner { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; }
 
-/* EMPTY */
-.empty-listings { text-align: center; padding: 44px 24px; }
-.empty-listings h3 { font-size: 1rem; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
-.empty-listings p { font-size: 0.84rem; color: var(--text3); line-height: 1.6; max-width: 320px; margin: 0 auto; }
+    /* LOADING */
+    .loading-state { text-align: center; padding: 56px 24px; }
+    .spinner { width: 44px; height: 44px; border: 3px solid var(--border2); border-top-color: #e84dbd; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 18px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-state h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .loading-state p { font-size: 0.84rem; color: var(--text2); margin-bottom: 14px; }
+    .prog-track { width: 200px; height: 4px; background: var(--border2); border-radius: 100px; overflow: hidden; margin: 0 auto 6px; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #e84dbd); border-radius: 100px; width: 0%; transition: width 0.4s ease; }
+    .prog-label { font-size: 0.72rem; color: var(--text3); }
 
-/* RESULTS */
-.results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
-.results-heading { font-size: 1.05rem; font-weight: 700; }
-.results-actions { display: flex; align-items: center; gap: 8px; }
-.results-count { background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
-.download-all-btn { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 7px 14px; font-size: 0.78rem; font-weight: 600; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-.download-all-btn:hover { border-color: #7c3aed; color: var(--text); }
+    /* ── ANIMATIONS ── */
 
-/* CARD */
-.listing-card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.4s ease both; box-shadow: var(--shadow); }
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-.card-imgs { display: flex; gap: 8px; padding: 12px; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; }
-.card-imgs img { height: 96px; width: 96px; object-fit: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--border); }
-.card-body { padding: 18px 20px 0; }
-.card-group-info { font-size: 0.72rem; color: var(--text3); margin-bottom: 10px; }
-.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 10px; }
-.card-num { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 3px; }
-.card-title { font-size: 1.02rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.3; }
-.card-prices { text-align: right; flex-shrink: 0; }
-.card-price { font-size: 1.45rem; font-weight: 800; background: linear-gradient(135deg, #e84dbd, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.03em; line-height: 1; }
-.card-rrp { font-size: 0.74rem; color: var(--text3); text-decoration: line-through; margin-top: 2px; }
-.card-rrp-lbl { font-size: 0.69rem; color: var(--text3); }
-.card-desc { font-size: 0.86rem; color: var(--text2); line-height: 1.7; margin-bottom: 12px; }
-.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
-.tag { background: var(--surface3); border: 1px solid var(--border2); border-radius: 100px; padding: 3px 10px; font-size: 0.71rem; color: var(--text2); font-weight: 500; }
-.card-footer { padding: 12px 20px; border-top: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-.badges { display: flex; gap: 6px; flex-wrap: wrap; }
-.badge { background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; padding: 3px 9px; font-size: 0.71rem; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 5px; }
-.bdot { width: 6px; height: 6px; border-radius: 50%; }
-.bdot-Vinted{background:#09b1ba;} .bdot-eBay{background:#e53238;} .bdot-Depop{background:#ff4040;} .bdot-Facebook{background:#1877f2;}
-.cond-new{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25);}
-.cond-likenew{background:rgba(34,197,94,.08);color:#86efac;border-color:rgba(34,197,94,.2);}
-.cond-good{background:rgba(59,130,246,.1);color:#93c5fd;border-color:rgba(59,130,246,.25);}
-.cond-fair{background:rgba(234,179,8,.1);color:#fde047;border-color:rgba(234,179,8,.25);}
-.cond-poor{background:rgba(239,68,68,.1);color:#fca5a5;border-color:rgba(239,68,68,.25);}
+    /* Photo thumbnail entrance */
+    @keyframes thumbIn { from{opacity:0;transform:scale(0.78)} to{opacity:1;transform:scale(1)} }
+    .photo-thumb { animation: thumbIn 0.22s cubic-bezier(.34,1.56,.64,1) both; }
 
-/* ACTION BUTTONS */
-.action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-.copy-btn { background: var(--bg2); border: 1px solid var(--border2); border-radius: 7px; padding: 6px 12px; font-size: 0.77rem; font-weight: 600; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-.copy-btn:hover { border-color: #7c3aed; color: var(--text); }
-.copy-btn.done { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.3); color: #4ade80; }
-.dl-btn { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.35); border-radius: 7px; padding: 6px 12px; font-size: 0.77rem; font-weight: 600; color: #a78bfa; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-.dl-btn:hover { background: rgba(124,58,237,0.2); border-color: #7c3aed; color: #c4b5fd; }
+    /* Upload zone gentle pulse ring when empty */
+    @keyframes zonePulse { 0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0)} 50%{box-shadow:0 0 0 6px rgba(124,58,237,0.08)} }
+    .upload-zone:not(.at-limit) { animation: zonePulse 3.5s ease-in-out infinite; }
+    .upload-zone:hover, .upload-zone.drag-over { animation: none; }
 
-/* TOAST */
-.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1e1e1e; border: 1px solid #3a3a3a; border-radius: 100px; padding: 10px 20px; font-size: 0.84rem; font-weight: 600; color: #fff; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 999; transition: transform 0.3s cubic-bezier(.34,1.56,.64,1); white-space: nowrap; }
-.toast.show { transform: translateX(-50%) translateY(0); }
+    /* Generate button shimmer sweep */
+    @keyframes btnShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
+    .gen-btn:not(:disabled) {
+      background-size: 200% auto;
+      animation: btnShimmer 4s linear infinite;
+    }
+    .gen-btn:not(:disabled):hover { animation-play-state: paused; }
 
-.hicon-btn { width: 34px; height: 34px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; color: var(--text2); transition: all 0.15s; font-family: inherit; }
-.hicon-btn:hover { border-color: #7c3aed; color: var(--text); background: rgba(124,58,237,0.15); }
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-.modal-overlay.open { display: flex; }
-.modal { background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.6); animation: modalIn 0.25s cubic-bezier(.34,1.56,.64,1); }
-@keyframes modalIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
-.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid #2e2e2e; }
-.modal-title { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 700; }
-.modal-logo { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #7c3aed, #e84dbd); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; font-weight: 800; }
-.modal-close { background: none; border: none; color: #555; font-size: 1rem; cursor: pointer; padding: 4px; border-radius: 6px; transition: color 0.15s; }
-.modal-close:hover { color: #fff; }
-.modal-body { padding: 20px 22px 24px; }
-.modal-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
-.modal-step { display: flex; gap: 14px; align-items: flex-start; font-size: 0.875rem; color: var(--text2); line-height: 1.55; }
-.modal-step strong { color: var(--text); display: block; margin-bottom: 2px; }
-.step-num { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.modal-note { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.25); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: 0.83rem; }
-.modal-note strong { color: var(--text); display: block; margin-bottom: 8px; }
-.modal-note ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
-.modal-note ul li { color: var(--text2); padding-left: 14px; position: relative; }
-.modal-note ul li::before { content: '\00b7'; position: absolute; left: 0; color: #a78bfa; font-weight: 700; }
-.modal-powered { font-size: 0.72rem; color: var(--text3); text-align: center; }
-.modal-tabs { display: flex; border-bottom: 1px solid #2e2e2e; padding: 0 22px; }
-.modal-tab { background: none; border: none; color: var(--text3); font-family: 'Inter', sans-serif; font-size: 0.84rem; font-weight: 600; padding: 12px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
-.modal-tab:hover { color: var(--text2); }
-.modal-tab.active { color: var(--text); border-bottom-color: #e84dbd; }
-.modal-pane { display: none; }
-.modal-pane.active { display: block; }
-.fb-group { margin-bottom: 16px; }
-.fb-label { font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 7px; display: block; }
-.fb-types { display: flex; gap: 7px; flex-wrap: wrap; }
-.fb-type { background: var(--surface2); border: 1px solid var(--border2); border-radius: 100px; padding: 5px 14px; font-size: 0.78rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
-.fb-type.sel { background: rgba(232,77,189,0.15); border-color: #e84dbd; color: #f0abdc; }
-.fb-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none; transition: border-color 0.15s; resize: none; }
-.fb-input:focus { border-color: #7c3aed; }
-.fb-input::placeholder { color: var(--text3); }
-.fb-send { width: 100%; background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; border: none; border-radius: 10px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 4px; }
-.fb-send:hover:not(:disabled) { opacity: 0.88; }
-.fb-send:disabled { opacity: 0.4; cursor: not-allowed; }
-.fb-sent { text-align: center; padding: 28px 0 12px; }
-.fb-sent-icon { font-size: 2.2rem; margin-bottom: 10px; }
-.fb-sent h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-.fb-sent p { font-size: 0.84rem; color: var(--text2); line-height: 1.6; }
+    /* Loading dots under spinner text */
+    @keyframes dotBounce { 0%,80%,100%{transform:translateY(0);opacity:0.3} 40%{transform:translateY(-5px);opacity:1} }
+    .load-dots { display: inline-flex; gap: 4px; margin-left: 2px; vertical-align: middle; }
+    .load-dots span { width: 4px; height: 4px; background: var(--text3); border-radius: 50%; display: inline-block; animation: dotBounce 1.2s ease-in-out infinite both; }
+    .load-dots span:nth-child(2) { animation-delay: 0.16s; }
+    .load-dots span:nth-child(3) { animation-delay: 0.32s; }
 
-body.platform-vinted {
-  --accent: #09b1ba;
-  --accent-soft: rgba(9,177,186,0.18);
-}
-body.platform-ebay {
-  --accent: #e53238;
-  --accent-soft: rgba(229,50,56,0.18);
-}
-body.platform-depop {
-  --accent: #ff4040;
-  --accent-soft: rgba(255,64,64,0.18);
-}
-body.platform-facebook {
-  --accent: #1877f2;
-  --accent-soft: rgba(24,119,242,0.18);
-}
+    /* Result card shine on hover */
+    @keyframes cardShine { from{left:-100%} to{left:200%} }
+    .listing-card { position: relative; overflow: hidden; }
+    .listing-card::after { content:''; position:absolute; top:0; left:-100%; width:40%; height:100%; background: linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent); pointer-events:none; transition: none; }
+    .listing-card:hover::after { animation: cardShine 0.55s ease forwards; }
 
-body[class*="platform-"] .gen-btn {
-  background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 55%, #e84dbd 100%);
-}
+    /* Tag subtle pop on hover */
+    .tag { transition: all 0.15s; }
+    .tag:hover { background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.5); color: var(--text); transform: translateY(-1px); }
 
-body[class*="platform-"] .download-all-btn:hover,
-body[class*="platform-"] .copy-btn:hover,
-body[class*="platform-"] .hicon-btn:hover {
-  border-color: var(--accent);
-}
+    /* Toast bounce in */
+    @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px) scale(0.92)} to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)} }
+    .toast.show { animation: toastIn 0.28s cubic-bezier(.34,1.56,.64,1) forwards; }
 
-body[class*="platform-"] .tag {
-  border-color: var(--accent-soft);
-}
+    /* Copy done state flash */
+    @keyframes copyFlash { 0%{background:rgba(34,197,94,0.25)} 100%{background:rgba(34,197,94,0.1)} }
+    .copy-btn.done { animation: copyFlash 0.3s ease forwards; }
 
-.sample-card {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
+    /* EMPTY — IMPROVEMENT 5: warmer copy + visible gradient icon */
+    .empty-listings { text-align: center; padding: 44px 24px; }
+    .empty-listings h3 { font-size: 1rem; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+    .empty-listings p { font-size: 0.84rem; color: var(--text3); line-height: 1.6; max-width: 320px; margin: 0 auto; }
 
-.sample-card-top {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
+    /* RESULTS */
+    .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+    .results-heading { font-size: 1.05rem; font-weight: 700; }
+    .results-actions { display: flex; align-items: center; gap: 8px; }
+    .results-count { background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
+    .download-all-btn { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 7px 14px; font-size: 0.78rem; font-weight: 600; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+    .download-all-btn:hover { border-color: var(--accent); color: var(--text); }
 
-.sample-card-body {
-  padding: 16px;
-}
+    /* CARD — IMPROVEMENT 4: platform accent top border */
+    .listing-card { background: var(--surface); border: 1px solid var(--border2); border-top: 3px solid var(--accent); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.4s ease both; box-shadow: var(--shadow); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    .card-imgs { display: flex; gap: 8px; padding: 12px; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .card-imgs img { height: 96px; width: 96px; object-fit: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--border); }
+    .card-body { padding: 18px 20px 0; }
+    .card-group-info { font-size: 0.72rem; color: var(--text3); margin-bottom: 10px; }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 10px; }
+    .card-num { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 3px; }
+    .card-title { font-size: 1.02rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.3; }
+    .card-prices { text-align: right; flex-shrink: 0; }
+    .card-price { font-size: 1.45rem; font-weight: 800; background: linear-gradient(135deg, #e84dbd, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.03em; line-height: 1; }
+    .card-rrp { font-size: 0.74rem; color: var(--text3); text-decoration: line-through; margin-top: 2px; }
+    .card-rrp-lbl { font-size: 0.69rem; color: var(--text3); }
 
-.sample-title {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
+    /* IMPROVEMENT 2: confidence block — chip + why box as one unit */
+    .confidence-block { margin-bottom: 14px; }
+    .confidence-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .confidence-label { font-size: 0.72rem; color: var(--text3); font-weight: 500; }
+    .conf-chip { display: inline-flex; align-items: center; border-radius: 999px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700; border: 1px solid; }
+    .conf-high  { background: rgba(34,197,94,.12);  color: #86efac; border-color: rgba(34,197,94,.25); }
+    .conf-medium{ background: rgba(234,179,8,.12);  color: #fde047; border-color: rgba(234,179,8,.25); }
+    .conf-low   { background: rgba(239,68,68,.12);  color: #fca5a5; border-color: rgba(239,68,68,.25); }
+    .price-expl { font-size: 0.77rem; color: var(--text2); background: rgba(255,255,255,0.025); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; line-height: 1.6; }
+    .price-expl strong { color: var(--text); font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 3px; }
 
-.sample-price {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
+    .card-desc { font-size: 0.86rem; color: var(--text2); line-height: 1.7; margin-bottom: 12px; }
 
-.sample-meta {
-  font-size: 0.78rem;
-  color: var(--text2);
-  margin-bottom: 8px;
-}
+    /* IMPROVEMENT 3: tag section label — visible with tag icon */
+    .tag-section-label { display: flex; align-items: center; gap: 5px; font-size: 0.69rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; }
 
-.sample-desc {
-  font-size: 0.83rem;
-  color: var(--text2);
-  line-height: 1.65;
-  margin-bottom: 10px;
-}
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+    .tag { background: var(--surface3); border: 1px solid var(--accent-soft); border-radius: 100px; padding: 3px 10px; font-size: 0.71rem; color: var(--text2); font-weight: 500; }
 
-.price-expl {
-  font-size: 0.77rem;
-  color: var(--text2);
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-top: 10px;
-  margin-bottom: 14px;
-}
+    .card-footer { padding: 12px 20px; border-top: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge { background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; padding: 3px 9px; font-size: 0.71rem; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+    .bdot { width: 6px; height: 6px; border-radius: 50%; }
+    .bdot-Vinted{background:#09b1ba;} .bdot-eBay{background:#e53238;} .bdot-Depop{background:#ff4040;} .bdot-Facebook{background:#1877f2;}
+    .cond-new{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25);}
+    .cond-likenew{background:rgba(34,197,94,.08);color:#86efac;border-color:rgba(34,197,94,.2);}
+    .cond-good{background:rgba(59,130,246,.1);color:#93c5fd;border-color:rgba(59,130,246,.25);}
+    .cond-fair{background:rgba(234,179,8,.1);color:#fde047;border-color:rgba(234,179,8,.25);}
+    .cond-poor{background:rgba(239,68,68,.1);color:#fca5a5;border-color:rgba(239,68,68,.25);}
 
-.conf-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  border: 1px solid var(--border2);
-}
+    /* ACTION BUTTONS */
+    .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .copy-btn { background: var(--bg2); border: 1px solid var(--border2); border-radius: 7px; padding: 6px 12px; font-size: 0.77rem; font-weight: 600; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+    .copy-btn:hover { border-color: var(--accent); color: var(--text); }
+    .copy-btn.done { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.3); color: #4ade80; }
+    .dl-btn { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.35); border-radius: 7px; padding: 6px 12px; font-size: 0.77rem; font-weight: 600; color: #a78bfa; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+    .dl-btn:hover { background: rgba(124,58,237,0.2); border-color: var(--accent); color: #c4b5fd; }
 
-.conf-high {
-  background: rgba(34,197,94,.12);
-  color: #86efac;
-  border-color: rgba(34,197,94,.25);
-}
-.conf-medium {
-  background: rgba(234,179,8,.12);
-  color: #fde047;
-  border-color: rgba(234,179,8,.25);
-}
-.conf-low {
-  background: rgba(239,68,68,.12);
-  color: #fca5a5;
-  border-color: rgba(239,68,68,.25);
-}
+    /* TOAST */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1e1e1e; border: 1px solid #3a3a3a; border-radius: 100px; padding: 10px 20px; font-size: 0.84rem; font-weight: 600; color: #fff; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 999; transition: transform 0.3s cubic-bezier(.34,1.56,.64,1); white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
 
-@media (max-width: 600px) {
-  .header { padding: 0 16px; }
-  .main { padding: 32px 16px 80px; }
-  .hero h1 { font-size: 1.85rem; }
-  .card-footer { flex-direction: column; align-items: flex-start; }
-  .action-btns { width: 100%; }
-  .copy-btn, .dl-btn { flex: 1; text-align: center; justify-content: center; }
-  .modal { border-radius: 16px; }
-}
-</style>
+    .hicon-btn { width: 34px; height: 34px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; color: var(--text2); transition: all 0.15s; font-family: inherit; }
+    .hicon-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(124,58,237,0.15); }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #1e1e1e; border: 1px solid #2e2e2e; border-radius: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.6); animation: modalIn 0.25s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes modalIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid #2e2e2e; }
+    .modal-title { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 700; }
+    .modal-logo { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, #7c3aed, #e84dbd); display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; font-weight: 800; }
+    .modal-close { background: none; border: none; color: #555; font-size: 1rem; cursor: pointer; padding: 4px; border-radius: 6px; transition: color 0.15s; }
+    .modal-close:hover { color: #fff; }
+    .modal-body { padding: 20px 22px 24px; }
+
+    /* IMPROVEMENT 6: currency row inside modal for mobile */
+    .modal-currency-row { display: none; padding: 10px 22px; border-bottom: 1px solid #2e2e2e; align-items: center; gap: 10px; }
+    .modal-currency-row label { font-size: 0.8rem; color: var(--text2); font-weight: 500; }
+    .modal-currency-row select {
+      background: var(--surface2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 1l3.5 3L8 1' stroke='%23777' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") no-repeat right 9px center;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 0 26px 0 10px;
+      height: 32px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+    @media (max-width: 480px) { .modal-currency-row { display: flex; } }
+
+    .modal-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+    .modal-step { display: flex; gap: 14px; align-items: flex-start; font-size: 0.875rem; color: var(--text2); line-height: 1.55; }
+    .modal-step strong { color: var(--text); display: block; margin-bottom: 2px; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .modal-note { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.25); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: 0.83rem; }
+    .modal-note strong { color: var(--text); display: block; margin-bottom: 8px; }
+    .modal-note ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .modal-note ul li { color: var(--text2); padding-left: 14px; position: relative; }
+    .modal-note ul li::before { content: '\00b7'; position: absolute; left: 0; color: #a78bfa; font-weight: 700; }
+    .modal-powered { font-size: 0.72rem; color: var(--text3); text-align: center; }
+    .modal-tabs { display: flex; border-bottom: 1px solid #2e2e2e; padding: 0 22px; }
+    .modal-tab { background: none; border: none; color: var(--text3); font-family: 'Inter', sans-serif; font-size: 0.84rem; font-weight: 600; padding: 12px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+    .modal-tab:hover { color: var(--text2); }
+    .modal-tab.active { color: var(--text); border-bottom-color: #e84dbd; }
+    .modal-pane { display: none; }
+    .modal-pane.active { display: block; }
+    .fb-group { margin-bottom: 16px; }
+    .fb-label { font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 7px; display: block; }
+    .fb-types { display: flex; gap: 7px; flex-wrap: wrap; }
+    .fb-type { background: var(--surface2); border: 1px solid var(--border2); border-radius: 100px; padding: 5px 14px; font-size: 0.78rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+    .fb-type.sel { background: rgba(232,77,189,0.15); border-color: #e84dbd; color: #f0abdc; }
+    .fb-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none; transition: border-color 0.15s; resize: none; }
+    .fb-input:focus { border-color: #7c3aed; }
+    .fb-input::placeholder { color: var(--text3); }
+    .fb-send { width: 100%; background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; border: none; border-radius: 10px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 4px; }
+    .fb-send:hover:not(:disabled) { opacity: 0.88; }
+    .fb-send:disabled { opacity: 0.4; cursor: not-allowed; }
+    .fb-sent { text-align: center; padding: 28px 0 12px; }
+    .fb-sent-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .fb-sent h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .fb-sent p { font-size: 0.84rem; color: var(--text2); line-height: 1.6; }
+
+    /* PLATFORM THEMING */
+    body.platform-vinted  { --accent: #09b1ba; --accent-soft: rgba(9,177,186,0.2); }
+    body.platform-ebay    { --accent: #e53238; --accent-soft: rgba(229,50,56,0.2); }
+    body.platform-depop   { --accent: #ff4040; --accent-soft: rgba(255,64,64,0.2); }
+    body.platform-facebook{ --accent: #1877f2; --accent-soft: rgba(24,119,242,0.2); }
+
+    body[class*="platform-"] .gen-btn {
+      background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 55%, #e84dbd 100%);
+    }
+    body[class*="platform-"] .platform-hint-pill {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+      color: color-mix(in srgb, var(--accent) 80%, white);
+      filter: brightness(1.3);
+    }
+    body[class*="platform-"] .download-all-btn:hover,
+    body[class*="platform-"] .copy-btn:hover,
+    body[class*="platform-"] .dl-btn:hover,
+    body[class*="platform-"] .hicon-btn:hover { border-color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .header { padding: 0 16px; }
+      .main { padding: 32px 16px 80px; }
+      .hero h1 { font-size: 1.85rem; }
+      .card-footer { flex-direction: column; align-items: flex-start; }
+      .action-btns { width: 100%; }
+      .copy-btn, .dl-btn { flex: 1; text-align: center; justify-content: center; }
+      .modal { border-radius: 16px; }
+    }
+  </style>
 </head>
 <body>
 
 <input type="file" id="fileInput" accept="image/*" multiple>
 
 <header class="header">
-  <a class="logo" href="#">
-    <div class="logo-icon">✦</div>
+  <a class="logo" href="#" onclick="resetApp(); return false;">
+    <div class="logo-icon">&#10022;</div>
     <span class="logo-text">Sell Smart</span>
   </a>
   <div class="header-controls">
     <div class="hsel">
       <select id="platformSel" onchange="platform=this.value; updatePlatformUI();">
-        <option value="Vinted">🏷 Vinted</option>
-        <option value="eBay">🛒 eBay</option>
-        <option value="Depop">👗 Depop</option>
-        <option value="Facebook Marketplace">💬 Facebook</option>
+        <option value="Vinted">&#127991; Vinted</option>
+        <option value="eBay">&#128722; eBay</option>
+        <option value="Depop">&#128248; Depop</option>
+        <option value="Facebook Marketplace">&#128172; Facebook</option>
       </select>
     </div>
-    <div class="hsel">
-      <select id="currencySel" onchange="currency=this.value; onCurrencyChange();">
-        <option value="GBP">£ GBP</option>
-        <option value="EUR">€ EUR</option>
-        <option value="USD">$ USD</option>
+    <div class="hsel currency-sel">
+      <select id="currencySel" onchange="currency=this.value; syncModalCurrency(); onCurrencyChange();">
+        <option value="GBP">&#163; GBP</option>
+        <option value="EUR">&#8364; EUR</option>
+        <option value="USD">&#36; USD</option>
       </select>
     </div>
-    <button class="hicon-btn" onclick="toggleInfo('how')" title="How it works">ⓘ</button>
-    <button class="hicon-btn" onclick="toggleInfo('feedback')" title="Send feedback" style="font-size:0.8rem">💬</button>
+    <button class="hicon-btn" onclick="toggleInfo('how')" title="How it works">&#9432;</button>
+    <button class="hicon-btn" onclick="toggleInfo('feedback')" title="Send feedback" style="font-size:0.8rem">&#128172;</button>
   </div>
 </header>
 
-<!-- INFO + FEEDBACK MODAL -->
 <div id="infoOverlay" class="modal-overlay" onclick="closeInfoOutside(event)">
   <div class="modal" id="infoModal">
     <div class="modal-header">
-      <div class="modal-title"><div class="modal-logo">✦</div>Sell Smart</div>
-      <button class="modal-close" onclick="toggleInfo()">✕</button>
+      <div class="modal-title"><div class="modal-logo">&#10022;</div>Sell Smart</div>
+      <button class="modal-close" onclick="toggleInfo()">&#10005;</button>
+    </div>
+    <div class="modal-currency-row">
+      <label for="modalCurrencySel">Currency</label>
+      <select id="modalCurrencySel" onchange="currency=this.value; syncHeaderCurrency(); onCurrencyChange();">
+        <option value="GBP">&#163; GBP</option>
+        <option value="EUR">&#8364; EUR</option>
+        <option value="USD">&#36; USD</option>
+      </select>
     </div>
     <div class="modal-tabs">
       <button class="modal-tab active" id="tabHow" onclick="switchTab('how')">How it works</button>
@@ -365,21 +386,21 @@ body[class*="platform-"] .tag {
     <div class="modal-pane active" id="paneHow">
       <div class="modal-body">
         <div class="modal-steps">
-          <div class="modal-step"><div class="step-num">1</div><div><strong>Upload photos</strong>Add up to 12 photos of items you want to sell. Mix different products — AI will group matching photos automatically.</div></div>
+          <div class="modal-step"><div class="step-num">1</div><div><strong>Upload photos</strong>Add up to 12 photos of items you want to sell. Mix different products &mdash; AI will group matching photos automatically.</div></div>
           <div class="modal-step"><div class="step-num">2</div><div><strong>Choose your platform</strong>Select Vinted, eBay, Depop, or Facebook Marketplace. The listing tone and style adapts to each platform.</div></div>
-          <div class="modal-step"><div class="step-num">3</div><div><strong>Generate listings</strong>AI analyses each photo, groups matching items, and writes a complete listing — title, description, suggested price, tags, and category.</div></div>
+          <div class="modal-step"><div class="step-num">3</div><div><strong>Generate listings</strong>AI analyses each photo, groups matching items, and writes a complete listing &mdash; title, description, suggested price, tags, and category.</div></div>
           <div class="modal-step"><div class="step-num">4</div><div><strong>Copy or download</strong>Copy individual fields or download all listings as a text file ready to paste into your selling platform.</div></div>
         </div>
         <div class="modal-note">
-          <strong>💡 Tips for best results</strong>
+          <strong>&#128161; Tips for best results</strong>
           <ul>
             <li>Use clear, well-lit photos against a plain background</li>
             <li>Include photos of labels, tags, or size info where visible</li>
             <li>Multiple angles of the same item are detected and merged</li>
-            <li>Images are compressed automatically — originals never leave your device</li>
+            <li>Images are compressed automatically &mdash; originals never leave your device</li>
           </ul>
         </div>
-        <div class="modal-powered">Powered by Google Gemini 2.5 Flash + Flash-Lite · Built at GDG London IWD 2026</div>
+        <div class="modal-powered">Powered by Google Gemini 2.5 Flash &middot; Built at GDG London IWD 2026</div>
       </div>
     </div>
     <div class="modal-pane" id="paneFeedback">
@@ -388,11 +409,11 @@ body[class*="platform-"] .tag {
           <div class="fb-group">
             <span class="fb-label">What's this about?</span>
             <div class="fb-types">
-              <button class="fb-type sel" onclick="selectFbType(this)">🐛 Bug report</button>
-              <button class="fb-type" onclick="selectFbType(this)">✨ Feature request</button>
-              <button class="fb-type" onclick="selectFbType(this)">💡 Suggestion</button>
-              <button class="fb-type" onclick="selectFbType(this)">👏 Compliment</button>
-              <button class="fb-type" onclick="selectFbType(this)">🤔 Other</button>
+              <button class="fb-type sel" onclick="selectFbType(this)">&#128027; Bug report</button>
+              <button class="fb-type" onclick="selectFbType(this)">&#10024; Feature request</button>
+              <button class="fb-type" onclick="selectFbType(this)">&#128161; Suggestion</button>
+              <button class="fb-type" onclick="selectFbType(this)">&#128079; Compliment</button>
+              <button class="fb-type" onclick="selectFbType(this)">&#129300; Other</button>
             </div>
           </div>
           <div class="fb-group" style="margin-top:14px">
@@ -401,13 +422,13 @@ body[class*="platform-"] .tag {
           </div>
           <div class="fb-group">
             <label class="fb-label" for="fbMsg">Message <span style="color:#f87171">*</span></label>
-            <textarea id="fbMsg" class="fb-input" rows="4" placeholder="Tell us what you think, what's broken, or what you'd love to see next…"></textarea>
+            <textarea id="fbMsg" class="fb-input" rows="4" placeholder="Tell us what you think, what's broken, or what you'd love to see next..."></textarea>
           </div>
-          <button class="fb-send" id="fbSendBtn" onclick="sendFeedback()">Send feedback →</button>
-          <p style="text-align:center;margin-top:12px;font-size:0.75rem;color:var(--text3)">Or email us directly: <a href="mailto:kanke.ishaku@live.com" style="color:#a78bfa;text-decoration:none">kanke.ishaku@live.com</a></p>
+          <button class="fb-send" id="fbSendBtn" onclick="sendFeedback()">Send feedback &rarr;</button>
+          <p style="text-align:center;margin-top:12px;font-size:0.75rem;color:var(--text3)">Or email directly: <a href="mailto:kanke.ishaku@live.com" style="color:#a78bfa;text-decoration:none">kanke.ishaku@live.com</a></p>
         </div>
         <div id="fbSent" class="fb-sent" style="display:none">
-          <div class="fb-sent-icon">🎉</div>
+          <div class="fb-sent-icon">&#127881;</div>
           <h3>Thanks for your feedback!</h3>
           <p>Your message has been sent to the Sell Smart team. We read every submission and really appreciate you taking the time.</p>
           <button class="fb-send" style="margin-top:16px;max-width:200px;margin-left:auto;margin-right:auto;display:block" onclick="resetFeedback()">Send another</button>
@@ -418,60 +439,35 @@ body[class*="platform-"] .tag {
 </div>
 
 <main class="main">
-
   <div class="hero">
     <div class="hero-icon-outer">
       <div class="hero-icon">
         <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
-          <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z"
-            stroke="url(#sg)" stroke-width="2" stroke-linejoin="round" fill="url(#sgf)" opacity="0.9"/>
+          <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z" stroke="url(#sg)" stroke-width="2" stroke-linejoin="round" fill="url(#sgf)" opacity="0.9"/>
           <defs>
-            <linearGradient id="sg" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#e84dbd"/><stop offset="1" stop-color="#a855f7"/>
-            </linearGradient>
-            <linearGradient id="sgf" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#e84dbd" stop-opacity="0.4"/><stop offset="1" stop-color="#a855f7" stop-opacity="0.2"/>
-            </linearGradient>
+            <linearGradient id="sg" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#e84dbd"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+            <linearGradient id="sgf" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#e84dbd" stop-opacity="0.4"/><stop offset="1" stop-color="#a855f7" stop-opacity="0.2"/></linearGradient>
           </defs>
         </svg>
       </div>
-      <span class="hero-sparkle s1">⭐</span>
-      <span class="hero-sparkle s2">⚡</span>
+      <span class="hero-sparkle s1">&#11088;</span>
+      <span class="hero-sparkle s2">&#9889;</span>
     </div>
     <h1>List faster. Sell smarter.</h1>
     <p>Transform product photos into professional listings in seconds with AI-powered analysis</p>
   </div>
 
-<!--  <div id="sampleCarousel" style="margin:0 0 28px">-->
-<!--    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">-->
-<!--      <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(&#45;&#45;text2)">Sample output</div>-->
-<!--      <div style="display:flex;gap:8px">-->
-<!--        <button class="hicon-btn" type="button" onclick="moveSample(-1)">←</button>-->
-<!--        <button class="hicon-btn" type="button" onclick="moveSample(1)">→</button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div id="sampleCardWrap"></div>-->
-<!--  </div>-->
-
-  <!-- BANNERS -->
   <div id="errBanner" class="banner err-banner">
-    <span class="banner-icon">⚠️</span>
-    <div class="banner-body">
-      <div class="banner-title" id="errTitle">Error</div>
-      <div class="banner-msg" id="errText"></div>
-    </div>
-    <button class="banner-dismiss" onclick="hideBanner('errBanner')">✕</button>
+    <span class="banner-icon">&#9888;&#65039;</span>
+    <div class="banner-body"><div class="banner-title" id="errTitle">Error</div><div class="banner-msg" id="errText"></div></div>
+    <button class="banner-dismiss" onclick="hideBanner('errBanner')">&#10005;</button>
   </div>
   <div id="warnBanner" class="banner warn-banner">
-    <span class="banner-icon">⚡</span>
-    <div class="banner-body">
-      <div class="banner-title" id="warnTitle">Warning</div>
-      <div class="banner-msg" id="warnText"></div>
-    </div>
-    <button class="banner-dismiss" onclick="hideBanner('warnBanner')">✕</button>
+    <span class="banner-icon">&#9889;</span>
+    <div class="banner-body"><div class="banner-title" id="warnTitle">Warning</div><div class="banner-msg" id="warnText"></div></div>
+    <button class="banner-dismiss" onclick="hideBanner('warnBanner')">&#10005;</button>
   </div>
 
-  <!-- UPLOAD ZONE -->
   <div class="upload-zone" id="uploadZone">
     <div class="upload-icon">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -481,7 +477,7 @@ body[class*="platform-"] .tag {
     <h3 id="zoneTitle">Drop images here or click to browse</h3>
     <p id="zoneSubtitle">Upload photos of items you want to sell. PNG, JPG, or WEBP</p>
     <div class="upload-meta">
-      <div class="upload-hint">ⓘ Max 12 photos · Auto-compressed to 1MB</div>
+      <div class="upload-hint">&#9432; Max 12 photos &middot; Auto-compressed</div>
       <div class="photo-counter" id="photoCounter">
         <span id="counterText">0 / 12</span>
         <div class="counter-bar"><div class="counter-fill" id="counterFill"></div></div>
@@ -489,57 +485,56 @@ body[class*="platform-"] .tag {
     </div>
   </div>
 
-  <!-- PHOTO PREVIEWS -->
   <div id="photosSection" style="display:none" class="photos-section">
     <div class="photos-header">
       <span class="photos-label" id="photosLabel">0 photos selected</span>
-      <button class="clear-btn" onclick="clearAll()">✕ Clear all</button>
+      <button class="clear-btn" onclick="clearAll()">&#10005; Clear all</button>
     </div>
     <div class="photo-grid" id="photoGrid"></div>
   </div>
 
-  <!-- GENERATE -->
   <div id="genWrap" style="display:none">
     <button class="gen-btn" id="genBtn" onclick="generate()">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="white"><path d="M8 1l1.2 5.2L15 5l-4 3 4 3-5.8-1.2L8 15l-1.2-5.2L1 11l4-3-4-3 5.8 1.2L8 1z"/></svg>
       <span id="genBtnText">Generate Vinted Listing</span>
     </button>
-    <div id="platformMeta" style="margin:-8px 0 18px;text-align:center">
-      <div id="platformHint" style="font-size:0.82rem;color:var(--text2)">Casual, honest, size-first listing style</div>
-      <div id="platformTone" style="font-size:0.74rem;color:var(--text3);margin-top:4px">Tone: casual &amp; concise</div>
+    <div class="platform-meta" id="platformMeta">
+      <div class="platform-hint-pill" id="platformHint">Casual, honest, size-first listing style</div>
+      <div class="platform-tone-pill" id="platformTone">Tone: friendly &amp; concise</div>
     </div>
   </div>
 
-  <!-- LOADING -->
   <div id="loadWrap" class="loading-state" style="display:none">
     <div class="spinner"></div>
     <h3 id="loadTitle">Analysing photos</h3>
-    <p id="loadSub">Please wait…</p>
+    <p id="loadSub">Please wait<span class="load-dots"><span></span><span></span><span></span></span></p>
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
     <div class="prog-label" id="progLabel">0%</div>
   </div>
 
-  <!-- RESULTS -->
   <div id="resultsWrap" style="display:none">
     <div class="results-header">
       <span class="results-heading">Generated Listings</span>
       <div class="results-actions">
         <span class="results-count" id="resCount">0</span>
-        <button class="download-all-btn" onclick="downloadAll()">↓ Download all</button>
+        <button class="download-all-btn" onclick="downloadAll()">&#8595; Download all</button>
       </div>
     </div>
     <div id="listingsCont"></div>
   </div>
 
-  <!-- EMPTY -->
+  <!-- IMPROVEMENT 5: warmer empty state with gradient icon -->
   <div id="emptyState" class="empty-listings">
-    <svg width="38" height="38" viewBox="0 0 40 40" fill="none" style="margin:0 auto 12px;display:block">
-      <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/>
+    <svg width="42" height="42" viewBox="0 0 40 40" fill="none" style="margin:0 auto 14px;display:block;opacity:0.85">
+      <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z" stroke="url(#eg)" stroke-width="1.5" stroke-linejoin="round" fill="url(#egf)"/>
+      <defs>
+        <linearGradient id="eg" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed" stop-opacity="0.7"/><stop offset="1" stop-color="#e84dbd" stop-opacity="0.7"/></linearGradient>
+        <linearGradient id="egf" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#7c3aed" stop-opacity="0.1"/><stop offset="1" stop-color="#e84dbd" stop-opacity="0.06"/></linearGradient>
+      </defs>
     </svg>
-    <h3>No listings yet</h3>
-    <p>Upload photos to get started. AI will analyse your items and generate professional listing details instantly.</p>
+    <h3>Ready when you are</h3>
+    <p>Upload photos of items you want to sell &mdash; AI will analyse, group, and write professional listings instantly.</p>
   </div>
-
 </main>
 
 <div class="toast" id="toast"></div>
@@ -551,1089 +546,374 @@ body[class*="platform-"] .tag {
   const MAX_PHOTOS = 12;
   const MAX_FILE_MB = 25;
 
-  let files = [];
-  let compressedCache = new Map();
-  let platform = 'Vinted';
-  let currency = 'GBP';
-  let lastResults = [];
-  let sampleIndex = 0;
+  let files = [], compressedCache = new Map(), platform = 'Vinted', currency = 'GBP', lastResults = [];
+  const FX = { GBP:1, EUR:1.17, USD:1.28 };
 
-  const FX = {
-    GBP: 1,
-    EUR: 1.17,
-    USD: 1.28
-  };
+  function sym(){ return {GBP:'£',EUR:'€',USD:'$'}[currency]||'£'; }
+  function fileCacheKey(f){ return f.name+':'+f.size+':'+f.lastModified; }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function getTagLabel(){ return platform==='eBay'?'Keywords':platform==='Depop'?'Style tags':platform==='Facebook Marketplace'?'Search terms':'Search tags'; }
+  function convertPrice(v,from,to){ var n=parseFloat(v); return isNaN(n)?v:(n/(FX[from]||1))*(FX[to]||1); }
 
-  const SAMPLE_LISTINGS = [
-    {
-      platform: 'Vinted',
-      title: 'Nike Air Force 1 White Trainers UK 6',
-      price: '£42.00',
-      confidence: 'High',
-      why: 'Strong brand recognition, popular resale model, visible good condition, and multiple angles support pricing confidence.',
-      desc: 'Classic Nike Air Force 1 trainers in white with a clean everyday look. Great for casual wear and easy to style. Good pre-owned condition with normal signs of wear.'
-    },
-    {
-      platform: 'Depop',
-      title: 'Oversized Zara Blazer in Camel',
-      price: '£28.00',
-      confidence: 'Medium',
-      why: 'Pricing is based on visible style appeal, likely high-street brand value, and condition, but exact collection or year is unclear.',
-      desc: 'Chic oversized Zara blazer in a warm camel tone. Easy to pair with trousers, denim, or skirts for a polished look. A strong wardrobe staple with timeless styling potential.'
-    },
-    {
-      platform: 'eBay',
-      title: 'Apple iPhone 12 Black 128GB Smartphone',
-      price: '£235.00',
-      confidence: 'Medium',
-      why: 'Recognisable model and category support pricing, though storage, battery health, and full working condition should ideally be confirmed.',
-      desc: 'Apple iPhone 12 in black with a sleek design and strong everyday performance. Great option for someone looking for a reliable Apple handset. Listing can be refined further with storage and battery details.'
-    }
-  ];
+  function syncModalCurrency(){ var s=document.getElementById('modalCurrencySel'); if(s) s.value=currency; }
+  function syncHeaderCurrency(){ var s=document.getElementById('currencySel'); if(s) s.value=currency; }
+  function onCurrencyChange(){ if(lastResults.length){ renderResults(lastResults); showWarn('Currency updated','Prices shown using estimated conversion rates.'); } }
 
-  function sym() {
-    return { GBP: '£', EUR: '€', USD: '$' }[currency] || '£';
-  }
-
-  function fileCacheKey(file) {
-    return file.name + ':' + file.size + ':' + file.lastModified;
-  }
-
-  function esc(s) {
-    return String(s || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  function getTagLabel() {
-    if (platform === 'eBay') return 'Keywords';
-    if (platform === 'Depop') return 'Style tags';
-    if (platform === 'Facebook Marketplace') return 'Search terms';
-    return 'Search tags';
-  }
-
-  function convertPrice(value, fromCurrency, toCurrency) {
-    var n = parseFloat(value);
-    if (isNaN(n)) return value;
-
-    var fromRate = FX[fromCurrency] || 1;
-    var toRate = FX[toCurrency] || 1;
-
-    var gbpValue = n / fromRate;
-    return gbpValue * toRate;
-  }
-
-  function onCurrencyChange() {
-    if (lastResults.length) {
-      renderResults(lastResults);
-      showWarn('Currency updated', 'Prices are shown using estimated conversion rates.');
-    }
-  }
-
-  // ── FILE INPUT ──
   const fileInput = document.getElementById('fileInput');
   const uploadZone = document.getElementById('uploadZone');
 
-  uploadZone.addEventListener('click', function () {
-    if (files.length < MAX_PHOTOS) fileInput.click();
-    else showWarn('Photo limit reached', 'You have ' + MAX_PHOTOS + ' photos selected. Remove some before adding more.');
-  });
+  uploadZone.addEventListener('click',function(){ if(files.length<MAX_PHOTOS) fileInput.click(); else showWarn('Photo limit reached','You have '+MAX_PHOTOS+' photos. Remove some before adding more.'); });
+  fileInput.addEventListener('change',function(){ if(this.files&&this.files.length){ handleFiles(this.files); this.value=''; } });
+  uploadZone.addEventListener('dragover',function(e){ e.preventDefault(); e.stopPropagation(); if(files.length<MAX_PHOTOS) uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave',function(e){ e.preventDefault(); uploadZone.classList.remove('drag-over'); });
+  uploadZone.addEventListener('drop',function(e){ e.preventDefault(); e.stopPropagation(); uploadZone.classList.remove('drag-over'); if(e.dataTransfer.files&&e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); });
 
-  fileInput.addEventListener('change', function () {
-    if (this.files && this.files.length) {
-      handleFiles(this.files);
-      this.value = '';
-    }
-  });
-
-  uploadZone.addEventListener('dragover', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (files.length < MAX_PHOTOS) uploadZone.classList.add('drag-over');
-  });
-
-  uploadZone.addEventListener('dragleave', function (e) {
-    e.preventDefault();
-    uploadZone.classList.remove('drag-over');
-  });
-
-  uploadZone.addEventListener('drop', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadZone.classList.remove('drag-over');
-    if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-  });
-
-  function handleFiles(incoming) {
+  function handleFiles(incoming){
     hideBanner('errBanner');
-
-    var arr = Array.from(incoming);
-    var skippedLimit = 0, skippedType = 0, skippedSize = 0, skippedDup = 0;
-
-    for (var i = 0; i < arr.length; i++) {
-      var f = arr[i];
-      if (files.length >= MAX_PHOTOS) {
-        skippedLimit += (arr.length - i);
-        break;
-      }
-      if (!f.type.startsWith('image/')) {
-        skippedType++;
-        continue;
-      }
-      if (f.size > MAX_FILE_MB * 1024 * 1024) {
-        skippedSize++;
-        continue;
-      }
-      if (files.find(function (x) {
-        return x.name === f.name && x.size === f.size && x.lastModified === f.lastModified;
-      })) {
-        skippedDup++;
-        continue;
-      }
+    var arr=Array.from(incoming), skippedLimit=0, skippedType=0, skippedSize=0, skippedDup=0;
+    for(var i=0;i<arr.length;i++){
+      var f=arr[i];
+      if(files.length>=MAX_PHOTOS){ skippedLimit+=(arr.length-i); break; }
+      if(!f.type.startsWith('image/')){ skippedType++; continue; }
+      if(f.size>MAX_FILE_MB*1024*1024){ skippedSize++; continue; }
+      if(files.find(function(x){ return x.name===f.name&&x.size===f.size&&x.lastModified===f.lastModified; })){ skippedDup++; continue; }
       files.push(f);
     }
-
-    var msgs = [];
-    if (skippedLimit) msgs.push(skippedLimit + ' photo' + (skippedLimit > 1 ? 's' : '') + ' not added — ' + MAX_PHOTOS + ' photo limit reached');
-    if (skippedType) msgs.push(skippedType + ' file' + (skippedType > 1 ? 's' : '') + ' skipped (not an image)');
-    if (skippedSize) msgs.push(skippedSize + ' file' + (skippedSize > 1 ? 's' : '') + ' skipped (over ' + MAX_FILE_MB + 'MB)');
-    if (skippedDup) msgs.push(skippedDup + ' duplicate' + (skippedDup > 1 ? 's' : '') + ' ignored');
-    if (msgs.length) showWarn('Some photos skipped', msgs.join(' · '));
-
+    var msgs=[];
+    if(skippedLimit) msgs.push(skippedLimit+' photo'+(skippedLimit>1?'s':'')+' not added — '+MAX_PHOTOS+' photo limit reached');
+    if(skippedType) msgs.push(skippedType+' file'+(skippedType>1?'s':'')+' skipped (not an image)');
+    if(skippedSize) msgs.push(skippedSize+' file'+(skippedSize>1?'s':'')+' skipped (over '+MAX_FILE_MB+'MB)');
+    if(skippedDup) msgs.push(skippedDup+' duplicate'+(skippedDup>1?'s':'')+' ignored');
+    if(msgs.length) showWarn('Some photos skipped',msgs.join(' · '));
     renderThumbs();
   }
 
-  function removeFile(i) {
-    var f = files[i];
-    if (f) {
-      compressedCache.delete(fileCacheKey(f));
-      compressedCache.delete('analysis:' + fileCacheKey(f));
-    }
-    files.splice(i, 1);
-    hideBanner('warnBanner');
-    renderThumbs();
+  function removeFile(i){ var f=files[i]; if(f){ compressedCache.delete(fileCacheKey(f)); compressedCache.delete('analysis:'+fileCacheKey(f)); } files.splice(i,1); hideBanner('warnBanner'); renderThumbs(); }
+  function clearAll(){ files=[];compressedCache.clear();lastResults=[];renderThumbs();document.getElementById('resultsWrap').style.display='none';document.getElementById('emptyState').style.display='block';hideBanner('errBanner');hideBanner('warnBanner'); }
+
+  function renderThumbs(){
+    var sec=document.getElementById('photosSection'),wrap=document.getElementById('genWrap'),grid=document.getElementById('photoGrid'),lbl=document.getElementById('photosLabel');
+    var counter=document.getElementById('photoCounter'),ct=document.getElementById('counterText'),cf=document.getElementById('counterFill');
+    var count=files.length,pct=(count/MAX_PHOTOS)*100,atLimit=count>=MAX_PHOTOS,near=count>=(MAX_PHOTOS-2);
+    if(count>0){ counter.classList.add('visible'); if(near) counter.classList.add('warn'); else counter.classList.remove('warn'); ct.textContent=count+' / '+MAX_PHOTOS; cf.style.width=pct+'%'; if(near) cf.classList.add('warn'); else cf.classList.remove('warn'); }
+    else{ counter.classList.remove('visible'); }
+    document.getElementById('zoneTitle').textContent=atLimit?'Limit reached ('+MAX_PHOTOS+' photos max)':'Drop images here or click to browse';
+    if(atLimit) uploadZone.classList.add('at-limit'); else uploadZone.classList.remove('at-limit');
+    if(!count){ sec.style.display='none'; wrap.style.display='none'; return; }
+    sec.style.display='block'; wrap.style.display='block';
+    lbl.textContent=count+' photo'+(count!==1?'s':'')+' selected'+(atLimit?' (max)':'');
+    grid.innerHTML='';
+    files.forEach(function(f,i){ var url=URL.createObjectURL(f),d=document.createElement('div'); d.className='photo-thumb'; d.style.animationDelay=(i*0.04)+'s'; d.innerHTML='<img src="'+url+'" alt="photo"><button class="rm" onclick="removeFile('+i+')">&#10005;</button>'; grid.appendChild(d); });
   }
 
-  function clearAll() {
-    files = [];
-    compressedCache.clear();
-    lastResults = [];
-    renderThumbs();
-    document.getElementById('resultsWrap').style.display = 'none';
-    document.getElementById('emptyState').style.display = 'block';
-    hideBanner('errBanner');
-    hideBanner('warnBanner');
-  }
-
-  function renderThumbs() {
-    var sec = document.getElementById('photosSection');
-    var wrap = document.getElementById('genWrap');
-    var grid = document.getElementById('photoGrid');
-    var lbl = document.getElementById('photosLabel');
-    var counter = document.getElementById('photoCounter');
-    var ct = document.getElementById('counterText');
-    var cf = document.getElementById('counterFill');
-
-    var count = files.length;
-    var pct = (count / MAX_PHOTOS) * 100;
-    var atLimit = count >= MAX_PHOTOS;
-    var near = count >= (MAX_PHOTOS - 2);
-
-    if (count > 0) {
-      counter.classList.add('visible');
-      if (near) counter.classList.add('warn'); else counter.classList.remove('warn');
-      ct.textContent = count + ' / ' + MAX_PHOTOS;
-      cf.style.width = pct + '%';
-      if (near) cf.classList.add('warn'); else cf.classList.remove('warn');
-    } else {
-      counter.classList.remove('visible');
-    }
-
-    document.getElementById('zoneTitle').textContent = atLimit ? 'Limit reached (' + MAX_PHOTOS + ' photos max)' : 'Drop images here or click to browse';
-
-    if (atLimit) uploadZone.classList.add('at-limit');
-    else uploadZone.classList.remove('at-limit');
-
-    if (!count) {
-      sec.style.display = 'none';
-      wrap.style.display = 'none';
-      return;
-    }
-
-    sec.style.display = 'block';
-    wrap.style.display = 'block';
-    lbl.textContent = count + ' photo' + (count !== 1 ? 's' : '') + ' selected' + (atLimit ? ' (max)' : '');
-    grid.innerHTML = '';
-
-    files.forEach(function (f, i) {
-      var url = URL.createObjectURL(f);
-      var d = document.createElement('div');
-      d.className = 'photo-thumb';
-      d.innerHTML = '<img src="' + url + '" alt="photo"><button class="rm" onclick="removeFile(' + i + ')">✕</button>';
-      grid.appendChild(d);
-    });
-  }
-
-  // ── PLATFORM UI ──
-  function updatePlatformUI() {
-    var hints = {
-      'Vinted': {
-        button: 'Generate Vinted Listing',
-        hint: 'Casual, honest, size-first listing style',
-        tone: 'Tone: casual & concise',
-        bodyClass: 'platform-vinted'
-      },
-      'eBay': {
-        button: 'Generate eBay Listing',
-        hint: 'Keyword-rich, detailed, search-friendly listing style',
-        tone: 'Tone: detailed & search-optimised',
-        bodyClass: 'platform-ebay'
-      },
-      'Depop': {
-        button: 'Generate Depop Listing',
-        hint: 'Trend-led, conversational, style-focused listing style',
-        tone: 'Tone: trendy & editorial',
-        bodyClass: 'platform-depop'
-      },
-      'Facebook Marketplace': {
-        button: 'Generate Facebook Listing',
-        hint: 'Direct, practical, local-buyer listing style',
-        tone: 'Tone: simple & direct',
-        bodyClass: 'platform-facebook'
-      }
+  function updatePlatformUI(){
+    var cfg={
+      'Vinted':              {cls:'platform-vinted',   hint:'Casual resale style &middot; brand + size first',  tone:'Tone: friendly &amp; concise'},
+      'eBay':                {cls:'platform-ebay',     hint:'Search optimised &middot; keyword rich titles',    tone:'Tone: detailed &amp; SEO focused'},
+      'Depop':               {cls:'platform-depop',    hint:'Style focused &middot; aesthetic &amp; vibe tags', tone:'Tone: trendy &amp; conversational'},
+      'Facebook Marketplace':{cls:'platform-facebook', hint:'Local selling &middot; clear &amp; practical',     tone:'Tone: simple &amp; direct'}
     };
-
-    var cfg = hints[platform] || hints['Vinted'];
-
-    var genBtnText = document.getElementById('genBtnText');
-    var platformHint = document.getElementById('platformHint');
-    var platformTone = document.getElementById('platformTone');
-
-    if (genBtnText) genBtnText.textContent = cfg.button;
-    if (platformHint) platformHint.textContent = cfg.hint;
-    if (platformTone) platformTone.textContent = cfg.tone;
-
-    document.body.classList.remove('platform-vinted', 'platform-ebay', 'platform-depop', 'platform-facebook');
-    document.body.classList.add(cfg.bodyClass);
-
-    //renderSampleCard();
-    if (lastResults.length) renderResults(lastResults);
+    var ui=cfg[platform]||cfg['Vinted'];
+    document.body.classList.remove('platform-vinted','platform-ebay','platform-depop','platform-facebook');
+    document.body.classList.add(ui.cls);
+    var btn=document.getElementById('genBtnText'); if(btn) btn.textContent='Generate '+platform+' Listing';
+    var hint=document.getElementById('platformHint'); if(hint) hint.innerHTML=ui.hint;
+    var tone=document.getElementById('platformTone'); if(tone) tone.innerHTML=ui.tone;
+    if(lastResults.length){
+      lastResults.forEach(function(r){
+        if(platform==='Depop') r.listing.tags=r.listing.tags.map(function(t){ return t.toLowerCase(); });
+        if(platform==='eBay') r.listing.tags=r.listing.tags.map(function(t){ return t.replace(/\s/g,''); });
+        if(platform==='Facebook Marketplace') r.listing.tags=r.listing.tags.slice(0,6);
+      });
+      renderResults(lastResults);
+    }
   }
 
-  // ── SAMPLE CAROUSEL ──
-  function confidenceClass(level) {
-    var x = String(level || '').toLowerCase();
-    if (x === 'high') return 'conf-high';
-    if (x === 'medium') return 'conf-medium';
-    return 'conf-low';
-  }
-
-  function renderSampleCard() {
-    var wrap = document.getElementById('sampleCardWrap');
-    if (!wrap) return;
-
-    var item = SAMPLE_LISTINGS[sampleIndex];
-    var tagLabel = getTagLabel();
-
-    wrap.innerHTML =
-      '<div class="sample-card">' +
-        '<div class="sample-card-top">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">' +
-            '<div class="badge"><div class="bdot bdot-' + item.platform.split(' ')[0] + '"></div>' + esc(item.platform) + '</div>' +
-            '<div class="conf-chip ' + confidenceClass(item.confidence) + '">Price confidence: ' + esc(item.confidence) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="sample-card-body">' +
-          '<div class="sample-title">' + esc(item.title) + '</div>' +
-          '<div class="sample-price">' + esc(item.price) + '</div>' +
-          '<div class="sample-meta">Example AI-generated listing preview</div>' +
-          '<div class="sample-desc">' + esc(item.desc) + '</div>' +
-          '<div style="font-size:0.72rem;color:var(--text3);margin-bottom:6px">' + esc(tagLabel) + '</div>' +
-          '<div class="tags">' +
-            '<span class="tag">brand</span><span class="tag">style</span><span class="tag">condition</span>' +
-          '</div>' +
-          '<div class="price-expl"><strong style="color:var(--text)">Why this price?</strong><br>' + esc(item.why) + '</div>' +
-        '</div>' +
-      '</div>';
-  }
-
-  function moveSample(dir) {
-    sampleIndex = (sampleIndex + dir + SAMPLE_LISTINGS.length) % SAMPLE_LISTINGS.length;
-    //renderSampleCard();
-  }
-
-  // ── COMPRESS ──
-  function compress(file, maxKB) {
-    maxKB = maxKB || 900;
-
-    return new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-
-      reader.onerror = function () {
-        reject(new Error('Could not read: ' + file.name));
-      };
-
-      reader.onload = function (e) {
-        var img = new Image();
-
-        img.onerror = function () {
-          reject(new Error('Could not load image: ' + file.name));
-        };
-
-        img.onload = function () {
-          try {
-            var canvas = document.createElement('canvas');
-            var w = img.width;
-            var h = img.height;
-            var max = 1400;
-
-            if (w > max || h > max) {
-              var s = max / Math.max(w, h);
-              w = Math.round(w * s);
-              h = Math.round(h * s);
-            }
-
-            canvas.width = w;
-            canvas.height = h;
-
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-
-            var q = 0.86;
-
-            function go() {
-              var d = canvas.toDataURL('image/jpeg', q);
-              var approxKB = (d.length * 3 / 4) / 1024;
-
-              if (approxKB > maxKB && q > 0.22) {
-                q -= 0.08;
-                go();
-              } else {
-                resolve(d.split(',')[1]);
-              }
-            }
-
+  function compress(file,maxKB){
+    maxKB=maxKB||900;
+    return new Promise(function(resolve,reject){
+      var reader=new FileReader();
+      reader.onerror=function(){ reject(new Error('Could not read: '+file.name)); };
+      reader.onload=function(e){
+        var img=new Image();
+        img.onerror=function(){ reject(new Error('Could not load image: '+file.name)); };
+        img.onload=function(){
+          try{
+            var canvas=document.createElement('canvas'),w=img.width,h=img.height,max=1400;
+            if(w>max||h>max){ var s=max/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s); }
+            canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+            var q=0.86;
+            function go(){ var d=canvas.toDataURL('image/jpeg',q); if((d.length*3/4)/1024>maxKB&&q>0.22){q-=0.08;go();}else resolve(d.split(',')[1]); }
             go();
-          } catch (err) {
-            reject(new Error('Compression failed: ' + err.message));
-          }
+          }catch(err){ reject(new Error('Compression failed: '+err.message)); }
         };
-
-        img.src = e.target.result;
+        img.src=e.target.result;
       };
-
       reader.readAsDataURL(file);
     });
   }
 
-  function compressCustom(file, opts) {
-    opts = opts || {};
-
-    var maxKB = opts.maxKB || 900;
-    var maxDimension = opts.maxDimension || 1400;
-    var qualityStart = opts.qualityStart || 0.86;
-    var qualityMin = opts.qualityMin || 0.22;
-    var qualityStep = opts.qualityStep || 0.08;
-
-    return new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-
-      reader.onerror = function () {
-        reject(new Error('Could not read: ' + file.name));
-      };
-
-      reader.onload = function (e) {
-        var img = new Image();
-
-        img.onerror = function () {
-          reject(new Error('Could not load image: ' + file.name));
-        };
-
-        img.onload = function () {
-          try {
-            var canvas = document.createElement('canvas');
-            var w = img.width;
-            var h = img.height;
-
-            if (w > maxDimension || h > maxDimension) {
-              var scale = maxDimension / Math.max(w, h);
-              w = Math.round(w * scale);
-              h = Math.round(h * scale);
-            }
-
-            canvas.width = w;
-            canvas.height = h;
-
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-
-            var q = qualityStart;
-
-            function go() {
-              var d = canvas.toDataURL('image/jpeg', q);
-              var approxKB = (d.length * 3 / 4) / 1024;
-
-              if (approxKB > maxKB && q > qualityMin) {
-                q -= qualityStep;
-                go();
-              } else {
-                resolve(d.split(',')[1]);
-              }
-            }
-
+  function compressCustom(file,opts){
+    opts=opts||{};var maxKB=opts.maxKB||900,maxDim=opts.maxDimension||1400,qStart=opts.qualityStart||0.86,qMin=opts.qualityMin||0.22,qStep=opts.qualityStep||0.08;
+    return new Promise(function(resolve,reject){
+      var reader=new FileReader();
+      reader.onerror=function(){ reject(new Error('Could not read: '+file.name)); };
+      reader.onload=function(e){
+        var img=new Image();
+        img.onerror=function(){ reject(new Error('Could not load image: '+file.name)); };
+        img.onload=function(){
+          try{
+            var canvas=document.createElement('canvas'),w=img.width,h=img.height;
+            if(w>maxDim||h>maxDim){ var s=maxDim/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s); }
+            canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+            var q=qStart;
+            function go(){ var d=canvas.toDataURL('image/jpeg',q); if((d.length*3/4)/1024>maxKB&&q>qMin){q-=qStep;go();}else resolve(d.split(',')[1]); }
             go();
-          } catch (err) {
-            reject(new Error('Compression failed: ' + err.message));
-          }
+          }catch(err){ reject(new Error('Compression failed: '+err.message)); }
         };
-
-        img.src = e.target.result;
+        img.src=e.target.result;
       };
-
       reader.readAsDataURL(file);
     });
   }
 
-  async function compressOnce(file, maxKB) {
-    var key = fileCacheKey(file);
-    if (compressedCache.has(key)) return compressedCache.get(key);
-    var result = await compress(file, maxKB || 900);
-    compressedCache.set(key, result);
-    return result;
-  }
+  async function compressOnce(file,maxKB){ var key=fileCacheKey(file); if(compressedCache.has(key)) return compressedCache.get(key); var r=await compress(file,maxKB||900); compressedCache.set(key,r); return r; }
+  async function compressForAnalysis(file){ var key='analysis:'+fileCacheKey(file); if(compressedCache.has(key)) return compressedCache.get(key); var r=await compressCustom(file,{maxKB:280,maxDimension:900,qualityStart:0.72,qualityMin:0.18,qualityStep:0.08}); compressedCache.set(key,r); return r; }
 
-  async function compressForAnalysis(file) {
-    var key = 'analysis:' + fileCacheKey(file);
-    if (compressedCache.has(key)) return compressedCache.get(key);
-
-    var result = await compressCustom(file, {
-      maxKB: 280,
-      maxDimension: 900,
-      qualityStart: 0.72,
-      qualityMin: 0.18,
-      qualityStep: 0.08
-    });
-
-    compressedCache.set(key, result);
-    return result;
-  }
-
-  // ── GEMINI API ──
-  async function callGemini(contents, model, generationConfig) {
-    var res;
-    var payload = JSON.stringify({
-      contents: contents,
-      generationConfig: generationConfig || {
-        temperature: 0.25,
-        maxOutputTokens: 4096
-      }
-    });
-
-    for (var attempt = 0; attempt < 3; attempt++) {
-      try {
-        res = await fetch(API_BASE + '/api/gemini?model=' + encodeURIComponent(model), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload
-        });
-      } catch (e) {
-        if (attempt === 2) throw new Error('Network error — check your internet connection and try again.');
-        await delay(1000 * (attempt + 1));
-        continue;
-      }
-
-      if (res.status !== 429 && res.status !== 503) break;
-      if (attempt < 2) await delay(1200 * (attempt + 1));
+  async function callGemini(contents,model,generationConfig){
+    var res,payload=JSON.stringify({contents:contents,generationConfig:generationConfig||{temperature:0.25,maxOutputTokens:4096}});
+    for(var attempt=0;attempt<3;attempt++){
+      try{ res=await fetch(API_BASE+'/api/gemini?model='+encodeURIComponent(model),{method:'POST',headers:{'Content-Type':'application/json'},body:payload}); }
+      catch(e){ if(attempt===2) throw new Error('Network error — check your connection.'); await delay(1000*(attempt+1)); continue; }
+      if(res.status!==429&&res.status!==503) break;
+      if(attempt<2) await delay(1200*(attempt+1));
     }
-
-    var data = {};
-    try {
-      data = await res.json();
-    } catch (e) {
-      throw new Error('Invalid response from server. Please try again.');
-    }
-
-    if (!res.ok) {
-      var msg =
-        (data && data.error && data.error.message) ||
-        data.error ||
-        data.message ||
-        ('API error ' + res.status);
-
-      if (res.status === 400) throw new Error('Invalid request — please try fewer or clearer photos. (' + msg + ')');
-      if (res.status === 401) throw new Error('Server API key missing or invalid.');
-      if (res.status === 403) throw new Error('Access denied by AI service. Check server configuration.');
-      if (res.status === 429 || res.status === 503) throw new Error('Model busy — high demand right now. Please try again in a moment.');
-      if (res.status >= 500) throw new Error('Server error — try again shortly. (' + msg + ')');
+    var data={};
+    try{ data=await res.json(); }catch(e){ throw new Error('Invalid response from server.'); }
+    if(!res.ok){
+      var msg=(data&&data.error&&data.error.message)||data.error||data.message||('API error '+res.status);
+      if(res.status===400) throw new Error('Invalid request — try fewer or clearer photos. ('+msg+')');
+      if(res.status===401) throw new Error('Server API key missing or invalid.');
+      if(res.status===403) throw new Error('Access denied by AI service.');
+      if(res.status===429||res.status===503) throw new Error('Model busy — try again in a moment.');
+      if(res.status>=500) throw new Error('Server error — try again shortly. ('+msg+')');
       throw new Error(msg);
     }
-
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      var reason = data.promptFeedback && data.promptFeedback.blockReason;
-      if (reason) throw new Error('Blocked by AI safety filters (' + reason + '). Try different photos.');
+    if(!data.candidates||!data.candidates[0]||!data.candidates[0].content){
+      var reason=data.promptFeedback&&data.promptFeedback.blockReason;
+      if(reason) throw new Error('Blocked by AI safety filters ('+reason+'). Try different photos.');
       throw new Error('AI returned an empty response. Please try again.');
     }
-
-    return data.candidates[0].content.parts[0].text || '';
+    return data.candidates[0].content.parts[0].text||'';
   }
 
-  function delay(ms) {
-    return new Promise(function (resolve) {
-      setTimeout(resolve, ms);
+  function delay(ms){ return new Promise(function(resolve){ setTimeout(resolve,ms); }); }
+  function parseJ(raw){ try{ return JSON.parse(String(raw||'').replace(/```json\s*|```\s*/g,'').trim()); }catch(e){ return null; } }
+
+  async function analyseAllImagesBatch(fs){
+    var parts=[];
+    for(var i=0;i<fs.length;i++){ var data=await compressForAnalysis(fs[i]); parts.push({inlineData:{mimeType:'image/jpeg',data:data}}); }
+    parts.push({text:
+      'Analyse all uploaded product photos together.\nSome photos may show the same item from different angles.\nGroup matching photos into the same item.\n\n'+
+      'If all photos appear to show the same item, return one group containing all photoIndexes.\n\n'+
+      'Also estimate a resale pricing confidence for each item as High, Medium, or Low.\nAlso provide a short explanation for why the suggested price range makes sense.\n\n'+
+      'Return ONLY valid JSON in this format:\n{"items":[{"groupId":1,"photoIndexes":[0,1],"brand":"brand or Unknown","model":"model or Unknown","productType":"specific type","color":"primary colour","condition":"New|Like New|Good|Fair|Poor","gender":"Men|Women|Unisex|N/A","size":"size if visible else null","productSignature":"combined signature","priceConfidence":"High|Medium|Low","priceWhy":"short explanation"}]}\n\n'+
+      'Rules:\n- photoIndexes must be zero-based\n- Every uploaded photo must appear in exactly one item group\n- Group only when clearly the same product\n- Return JSON only, no markdown'
     });
-  }
-
-  function parseJ(raw) {
-    try {
-      return JSON.parse(String(raw || '').replace(/```json\s*|```\s*/g, '').trim());
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // ── BATCH ANALYSIS ──
-  async function analyseAllImagesBatch(fs) {
-    var parts = [];
-
-    for (var i = 0; i < fs.length; i++) {
-      var data = await compressForAnalysis(fs[i]);
-      parts.push({
-        inlineData: {
-          mimeType: 'image/jpeg',
-          data: data
-        }
-      });
-    }
-
-    parts.push({
-      text:
-        'Analyse all uploaded product photos together.\n' +
-        'Some photos may show the same item from different angles.\n' +
-        'Group matching photos into the same item.\n\n' +
-        'If all photos appear to show the same item,\n' +
-        'return one group containing all photoIndexes.\n\n' +
-        'Also estimate a resale pricing confidence for each item as High, Medium, or Low.\n' +
-        'Also provide a short explanation for why the suggested price range makes sense.\n\n' +
-        'Return ONLY valid JSON in this format:\n' +
-        '{\n' +
-        '  "items": [\n' +
-        '    {\n' +
-        '      "groupId": 1,\n' +
-        '      "photoIndexes": [0,1],\n' +
-        '      "brand": "brand or Unknown",\n' +
-        '      "model": "model or Unknown",\n' +
-        '      "productType": "specific type",\n' +
-        '      "color": "primary colour",\n' +
-        '      "condition": "New|Like New|Good|Fair|Poor",\n' +
-        '      "gender": "Men|Women|Unisex|N/A",\n' +
-        '      "size": "size if visible else null",\n' +
-        '      "productSignature": "combined signature",\n' +
-        '      "priceConfidence": "High|Medium|Low",\n' +
-        '      "priceWhy": "short explanation"\n' +
-        '    }\n' +
-        '  ]\n' +
-        '}\n\n' +
-        'Rules:\n' +
-        '- photoIndexes must be zero-based\n' +
-        '- Every uploaded photo must appear in exactly one item group\n' +
-        '- Group only when clearly the same product\n' +
-        '- Return JSON only, no markdown'
-    });
-
-    var raw = await callGemini(
-      [{ role: 'user', parts: parts }],
-      ANALYSIS_MODEL,
-      { temperature: 0.1, maxOutputTokens: 4096 }
-    );
-
-    var parsed = parseJ(raw);
-
-    if (!parsed || !Array.isArray(parsed.items)) {
-      throw new Error('Could not analyse uploaded photos as a batch.');
-    }
-
-    return parsed.items.map(function (item, idx) {
+    var raw=await callGemini([{role:'user',parts:parts}],ANALYSIS_MODEL,{temperature:0.1,maxOutputTokens:4096});
+    var parsed=parseJ(raw);
+    if(!parsed||!Array.isArray(parsed.items)) throw new Error('Could not analyse uploaded photos as a batch.');
+    return parsed.items.map(function(item,idx){
       return {
-        groupId: item.groupId || (idx + 1),
-        photoIndexes: Array.isArray(item.photoIndexes) ? item.photoIndexes.filter(function (n) {
-          return Number.isInteger(n) && n >= 0 && n < files.length;
-        }) : [],
-        brand: item.brand || 'Unknown',
-        model: item.model || 'Unknown',
-        productType: item.productType || 'Item',
-        color: item.color || 'Unknown',
-        condition: item.condition || 'Good',
-        gender: item.gender || 'Unisex',
-        size: item.size || null,
-        productSignature: item.productSignature || ((item.brand || 'Unknown') + ' ' + (item.productType || 'Item')),
-        priceConfidence: item.priceConfidence || 'Medium',
-        priceWhy: item.priceWhy || 'Price is based on visible brand, condition, and likely resale demand.'
+        groupId:item.groupId||(idx+1),
+        photoIndexes:Array.isArray(item.photoIndexes)?item.photoIndexes.filter(function(n){ return Number.isInteger(n)&&n>=0&&n<files.length; }):[],
+        brand:item.brand||'Unknown',model:item.model||'Unknown',productType:item.productType||'Item',
+        color:item.color||'Unknown',condition:item.condition||'Good',gender:item.gender||'Unisex',
+        size:item.size||null,productSignature:item.productSignature||((item.brand||'Unknown')+' '+(item.productType||'Item')),
+        priceConfidence:item.priceConfidence||'Medium',
+        priceWhy:item.priceWhy||'Price is based on visible brand, condition, and likely resale demand.'
       };
-    }).filter(function (item) {
-      return item.photoIndexes.length > 0;
-    });
+    }).filter(function(item){ return item.photoIndexes.length>0; });
   }
 
-  // ── LISTING GENERATION ──
-  async function genListingFromMeta(groupMeta) {
-    var guides = {
-      'Vinted': 'Friendly and casual. State brand, size, condition clearly.',
-      'eBay': 'Detailed and keyword-rich. Include model numbers if visible.',
-      'Depop': 'Trendy and conversational. Reference style or era if relevant. Include sizing cues.',
-      'Facebook Marketplace': 'Casual and direct. Keep it simple and practical.'
-    };
-
-    var tagGuidance =
-      platform === 'Vinted'
-        ? 'Focus tags on brand, size, colour, condition, and item type.'
-        : platform === 'eBay'
-        ? 'Focus tags on searchable keywords, brand, model, material, and item specifics.'
-        : platform === 'Depop'
-        ? 'Focus tags on style, aesthetic, vibe, era, and discovery-friendly fashion terms.'
-        : 'Focus tags on practical, simple buyer-friendly search terms.';
-
-    var prompt = [{
-      role: 'user',
-      parts: [{
-        text:
-          'You are an expert resale listing writer for ' + platform + '.\n\n' +
-          'Style guide: ' + (guides[platform] || '') + '\n' +
-          'Currency: ' + currency + ' (use symbol ' + sym() + ')\n' +
-          'Tag guidance: ' + tagGuidance + '\n\n' +
-          'Item metadata:\n' + JSON.stringify(groupMeta, null, 2) + '\n\n' +
-          'Return ONLY valid JSON:\n' +
-          '{\n' +
-          '  "title": "searchable title max 80 chars",\n' +
-          '  "description": "4-6 sentences: what it is, condition, features, sizing if clothing, why to buy",\n' +
-          '  "suggestedPrice": 0,\n' +
-          '  "rrp": 0,\n' +
-          '  "condition": "New|Like New|Good|Fair|Poor",\n' +
-          '  "category": "accurate ' + platform + ' category",\n' +
-          '  "tags": ["8-12 platform-specific search tags suited to ' + platform + '" ]\n' +
-          '}'
-      }]
-    }];
-
-    var raw = await callGemini(
-      prompt,
-      LISTING_MODEL,
-      { temperature: 0.35, maxOutputTokens: 2048 }
-    );
-
-    var parsed = parseJ(raw) || {
-      title: 'Item for Sale',
-      description: 'Pre-owned item in good condition.',
-      suggestedPrice: 0,
-      rrp: 0,
-      condition: groupMeta.condition || 'Good',
-      category: 'Other',
-      tags: []
-    };
-
-    parsed.currency = currency;
+  async function genListingFromMeta(groupMeta){
+    var guides={'Vinted':'Friendly and casual. State brand, size, condition clearly.','eBay':'Detailed and keyword-rich. Include model numbers if visible.','Depop':'Trendy and conversational. Reference style or era if relevant. Include sizing cues.','Facebook Marketplace':'Casual and direct. Keep it simple and practical.'};
+    var tagGuidance=platform==='Vinted'?'Focus tags on brand, size, colour, condition, and item type.':platform==='eBay'?'Focus tags on searchable keywords, brand, model, material, and item specifics.':platform==='Depop'?'Focus tags on style, aesthetic, vibe, era, and discovery-friendly fashion terms.':'Focus tags on practical, simple buyer-friendly search terms.';
+    var raw=await callGemini([{role:'user',parts:[{text:'You are an expert resale listing writer for '+platform+'.\n\nStyle guide: '+(guides[platform]||'')+'\nCurrency: '+currency+' (use symbol '+sym()+')\nTag guidance: '+tagGuidance+'\n\nItem metadata:\n'+JSON.stringify(groupMeta,null,2)+'\n\nReturn ONLY valid JSON:\n{"title":"searchable title max 80 chars","description":"4-6 sentences: what it is, condition, features, sizing if clothing, why to buy","suggestedPrice":0,"rrp":0,"condition":"New|Like New|Good|Fair|Poor","category":"accurate '+platform+' category","tags":["8-12 platform-specific search tags"]}'}]}],LISTING_MODEL,{temperature:0.35,maxOutputTokens:2048});
+    var parsed=parseJ(raw)||{title:'Item for Sale',description:'Pre-owned item in good condition.',suggestedPrice:0,rrp:0,condition:groupMeta.condition||'Good',category:'Other',tags:[]};
+    parsed.currency=currency;
     return parsed;
   }
 
-  // ── SMARTER LOADING COPY ──
-  function getAnalysisLoadSub(step, total, fileName) {
-    var messages = [
-      'Detecting product type…',
-      'Reading visible brand and style cues…',
-      'Checking whether angles belong to the same item…',
-      'Grouping matching photos…'
-    ];
-    return messages[Math.min(step, messages.length - 1)] + (fileName ? ' · ' + fileName : '');
-  }
-
-  // ── MAIN GENERATE ──
-  async function generate() {
-    if (!files.length) {
-      showErr('No photos', 'Please add at least one photo before generating.');
-      return;
-    }
-
-    hideBanner('errBanner');
-    hideBanner('warnBanner');
-    setLoad(true, 'Preparing photos', 'Compressing images for faster AI analysis…');
+  async function generate(){
+    if(!files.length){ showErr('No photos','Please add at least one photo before generating.'); return; }
+    hideBanner('errBanner');hideBanner('warnBanner');
+    setLoad(true,'Preparing photos','Compressing images for faster AI analysis...');
     setProg(5);
-    document.getElementById('genBtn').disabled = true;
-    document.getElementById('resultsWrap').style.display = 'none';
-    document.getElementById('emptyState').style.display = 'none';
-
-    try {
-      setLoad(true, 'Analysing photos', getAnalysisLoadSub(0, files.length, files[0] && files[0].name));
+    document.getElementById('genBtn').disabled=true;
+    document.getElementById('resultsWrap').style.display='none';
+    document.getElementById('emptyState').style.display='none';
+    try{
+      setLoad(true,'Analysing photos','Detecting product types, brands, and grouping matching photos...');
       setProg(25);
-
-      var groupedItems = await analyseAllImagesBatch(files);
-
-      var covered = new Set();
-      groupedItems.forEach(function (item) {
-        item.photoIndexes.forEach(function (idx) { covered.add(idx); });
-      });
-
-      for (var i = 0; i < files.length; i++) {
-        if (!covered.has(i)) {
-          groupedItems.push({
-            groupId: groupedItems.length + 1,
-            photoIndexes: [i],
-            brand: 'Unknown',
-            model: 'Unknown',
-            productType: 'Item',
-            color: 'Unknown',
-            condition: 'Good',
-            gender: 'Unisex',
-            size: null,
-            productSignature: files[i].name,
-            priceConfidence: 'Low',
-            priceWhy: 'Not enough clear visual detail was available, so pricing confidence is lower.'
-          });
-        }
+      var groupedItems=await analyseAllImagesBatch(files);
+      var covered=new Set();
+      groupedItems.forEach(function(item){ item.photoIndexes.forEach(function(idx){ covered.add(idx); }); });
+      for(var i=0;i<files.length;i++){
+        if(!covered.has(i)) groupedItems.push({groupId:groupedItems.length+1,photoIndexes:[i],brand:'Unknown',model:'Unknown',productType:'Item',color:'Unknown',condition:'Good',gender:'Unisex',size:null,productSignature:files[i].name,priceConfidence:'Low',priceWhy:'Not enough clear visual detail available, so pricing confidence is lower.'});
       }
-
-      setLoad(true, 'Writing listings', 'Writing listing copy in ' + platform + ' style…');
+      setLoad(true,'Writing listings','Writing listing copy in '+platform+' style...');
       setProg(60);
-
-      var results = [];
-      for (var g = 0; g < groupedItems.length; g++) {
-        var item = groupedItems[g];
-        setLoad(true, 'Writing listing ' + (g + 1) + ' of ' + groupedItems.length, 'Writing listing copy and pricing guidance…');
-        var listing = await genListingFromMeta(item);
-
-        listing.priceConfidence = item.priceConfidence || 'Medium';
-        listing.priceWhy = item.priceWhy || 'Price is based on visible condition, likely brand value, and resale demand.';
-
-        results.push({
-          listing: listing,
-          idxs: item.photoIndexes,
-          metas: item.photoIndexes.map(function () { return item; })
-        });
-
-        setProg(60 + Math.round(((g + 1) / groupedItems.length) * 35));
+      var results=[];
+      for(var g=0;g<groupedItems.length;g++){
+        var item=groupedItems[g];
+        setLoad(true,'Writing listing '+(g+1)+' of '+groupedItems.length,'Crafting copy and pricing guidance...');
+        var listing=await genListingFromMeta(item);
+        listing.priceConfidence=item.priceConfidence||'Medium';
+        listing.priceWhy=item.priceWhy||'Price is based on visible condition, likely brand value, and resale demand.';
+        results.push({listing:listing,idxs:item.photoIndexes,metas:item.photoIndexes.map(function(){ return item; })});
+        setProg(60+Math.round(((g+1)/groupedItems.length)*35));
       }
-
       setProg(100);
-      lastResults = results;
-
-      setTimeout(function () {
-        setLoad(false);
-        renderResults(results);
-        document.getElementById('genBtn').disabled = false;
-        showToast('✓ ' + results.length + ' listing' + (results.length !== 1 ? 's' : '') + ' generated!');
-      }, 300);
-
-    } catch (err) {
+      lastResults=results;
+      setTimeout(function(){
+        setLoad(false);renderResults(results);
+        document.getElementById('genBtn').disabled=false;
+        showToast('✓ '+results.length+' listing'+(results.length!==1?'s':'')+' generated!');
+      },300);
+    }catch(err){
       setLoad(false);
-      var msg = err.message || 'Something went wrong. Please try again.';
-      var title = 'Generation failed';
-
-      if (msg.toLowerCase().includes('network')) title = 'Connection error';
-      if (msg.toLowerCase().includes('model busy') || msg.toLowerCase().includes('high demand')) title = 'Model busy';
-      if (msg.toLowerCase().includes('blocked')) title = 'Content blocked';
-      if (msg.toLowerCase().includes('api')) title = 'API issue';
-
-      showErr(title, msg);
-      document.getElementById('emptyState').style.display = 'block';
-      document.getElementById('genBtn').disabled = false;
+      var msg=err.message||'Something went wrong. Please try again.';
+      var title='Generation failed';
+      if(msg.toLowerCase().includes('network')) title='Connection error';
+      if(msg.toLowerCase().includes('model busy')) title='Model busy';
+      if(msg.toLowerCase().includes('blocked')) title='Content blocked';
+      if(msg.toLowerCase().includes('api')) title='API issue';
+      showErr(title,msg);
+      document.getElementById('emptyState').style.display='block';
+      document.getElementById('genBtn').disabled=false;
     }
   }
 
-  // ── RENDER ──
-  function condCls(c) {
-    var m = {
-      'new': 'cond-new',
-      'like new': 'cond-likenew',
-      'good': 'cond-good',
-      'fair': 'cond-fair',
-      'poor': 'cond-poor'
-    };
-    return m[(c || '').toLowerCase()] || 'cond-good';
+  function condCls(c){ var m={'new':'cond-new','like new':'cond-likenew','good':'cond-good','fair':'cond-fair','poor':'cond-poor'}; return m[(c||'').toLowerCase()]||'cond-good'; }
+  function confidenceClass(level){ var x=String(level||'').toLowerCase(); return x==='high'?'conf-high':x==='medium'?'conf-medium':'conf-low'; }
+  function fmtPrice(n){ var x=parseFloat(n); return isNaN(x)?String(n||'—'):sym()+x.toFixed(2); }
+
+  function buildText(listing,price,rrp){
+    return [listing.title,'',listing.description,'','Condition: '+listing.condition,'Price: '+price+(listing.rrp&&parseFloat(listing.rrp)>0?'  (RRP: '+rrp+')':''),listing.category?'Category: '+listing.category:'',listing.priceConfidence?'Price confidence: '+listing.priceConfidence:'',listing.priceWhy?'Why this price?: '+listing.priceWhy:'','',(listing.tags||[]).map(function(t){ return '#'+t; }).join(' ')].join('\n').trim();
   }
 
-  function fmtPrice(n) {
-    var x = parseFloat(n);
-    return isNaN(x) ? String(n || '—') : sym() + x.toFixed(2);
-  }
-
-  function buildText(listing, price, rrp) {
-    return [
-      listing.title,
-      '',
-      listing.description,
-      '',
-      'Condition: ' + listing.condition,
-      'Price: ' + price + (listing.rrp && parseFloat(listing.rrp) > 0 ? '  (RRP: ' + rrp + ')' : ''),
-      listing.category ? 'Category: ' + listing.category : '',
-      listing.priceConfidence ? 'Price confidence: ' + listing.priceConfidence : '',
-      listing.priceWhy ? 'Why this price?: ' + listing.priceWhy : '',
-      '',
-      (listing.tags || []).map(function (t) { return '#' + t; }).join(' ')
-    ].join('\n').trim();
-  }
-
-  function renderResults(results) {
-    var cont = document.getElementById('listingsCont');
-    cont.innerHTML = '';
-    document.getElementById('resultsWrap').style.display = 'block';
-    document.getElementById('resCount').textContent = results.length + ' listing' + (results.length !== 1 ? 's' : '');
-
-    results.forEach(function (item, i) {
-      var listing = item.listing;
-      var idxs = item.idxs;
-      var metas = item.metas;
-
-      var baseCurrency = listing.currency || 'GBP';
-      var shownSuggested = convertPrice(listing.suggestedPrice, baseCurrency, currency);
-      var shownRrp = convertPrice(listing.rrp, baseCurrency, currency);
-
-      var card = document.createElement('div');
-      card.className = 'listing-card';
-      card.style.animationDelay = (i * 0.08) + 's';
-
-      var imgs = idxs.map(function (idx) {
-        return '<img src="' + URL.createObjectURL(files[idx]) + '" alt="Product">';
-      }).join('');
-
-      var tags = (listing.tags || []).map(function (t) {
-        return '<span class="tag">' + esc(t) + '</span>';
-      }).join('');
-
-      var sig = metas.map(function (m) {
-        return m.productSignature;
-      }).filter(Boolean).join(' · ');
-
-      var price = fmtPrice(shownSuggested);
-      var rrp = fmtPrice(shownRrp);
-      var dotClass = 'bdot-' + platform.split(' ')[0];
-      var fullText = buildText(listing, price, rrp);
-      var enc = encodeURIComponent(fullText);
-      var encTitle = encodeURIComponent(listing.title || '');
-      var dlName = 'listing-' + (i + 1) + '-' + platform.toLowerCase().replace(/\s/g, '-');
-
-      card.innerHTML =
-        '<div class="card-imgs">' + imgs + '</div>' +
-        '<div class="card-body">' +
-          '<div class="card-group-info">📎 ' + idxs.length + ' photo' + (idxs.length !== 1 ? 's' : '') + ' grouped · ' + esc(sig) + '</div>' +
-          '<div class="card-top">' +
-            '<div><div class="card-num">Listing ' + (i + 1) + '</div><div class="card-title">' + esc(listing.title) + '</div></div>' +
-            '<div class="card-prices">' +
-              '<div class="card-price">' + esc(price) + '</div>' +
-              (listing.rrp && parseFloat(listing.rrp) > 0 ? '<div class="card-rrp">' + esc(rrp) + '</div><div class="card-rrp-lbl">RRP</div>' : '') +
-            '</div>' +
-          '</div>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
-            '<div class="conf-chip ' + confidenceClass(listing.priceConfidence) + '">Price confidence: ' + esc(listing.priceConfidence || 'Medium') + '</div>' +
-          '</div>' +
-          '<p class="card-desc">' + esc(listing.description) + '</p>' +
-          '<div style="font-size:0.72rem;color:var(--text3);margin-bottom:6px">' + esc(getTagLabel()) + '</div>' +
-          '<div class="tags">' + tags + '</div>' +
-          '<div class="price-expl"><strong style="color:var(--text)">Why this price?</strong><br>' + esc(listing.priceWhy || 'Price is based on visible condition, likely brand value, and resale demand.') + '</div>' +
-        '</div>' +
-        '<div class="card-footer">' +
-          '<div class="badges">' +
-            '<div class="badge"><div class="bdot ' + dotClass + '"></div>' + esc(platform) + '</div>' +
-            '<div class="badge ' + condCls(listing.condition) + '">' + esc(listing.condition) + '</div>' +
-            (listing.category ? '<div class="badge">' + esc(listing.category) + '</div>' : '') +
-          '</div>' +
-          '<div class="action-btns">' +
-            '<button class="copy-btn" data-v="' + encTitle + '" onclick="doCopy(this)">📋 Title</button>' +
-            '<button class="copy-btn" data-v="' + enc + '" onclick="doCopy(this)">📋 Copy all</button>' +
-            '<button class="dl-btn" data-v="' + enc + '" data-name="' + dlName + '" onclick="doDownload(this)">↓ Download</button>' +
-          '</div>' +
+  function renderResults(results){
+    var cont=document.getElementById('listingsCont');
+    cont.innerHTML='';
+    document.getElementById('resultsWrap').style.display='block';
+    document.getElementById('resCount').textContent=results.length+' listing'+(results.length!==1?'s':'');
+    results.forEach(function(item,i){
+      var listing=item.listing,idxs=item.idxs,metas=item.metas;
+      var baseCurrency=listing.currency||'GBP';
+      var shownSuggested=convertPrice(listing.suggestedPrice,baseCurrency,currency);
+      var shownRrp=convertPrice(listing.rrp,baseCurrency,currency);
+      var card=document.createElement('div');
+      card.className='listing-card';
+      card.style.animationDelay=(i*0.08)+'s';
+      var imgs=idxs.map(function(idx){ return '<img src="'+URL.createObjectURL(files[idx])+'" alt="Product">'; }).join('');
+      var tags=(listing.tags||[]).map(function(t){ return '<span class="tag">'+esc(t)+'</span>'; }).join('');
+      var sig=metas.map(function(m){ return m.productSignature; }).filter(Boolean).join(' · ');
+      var price=fmtPrice(shownSuggested),rrp=fmtPrice(shownRrp);
+      var dotClass='bdot-'+platform.split(' ')[0];
+      var fullText=buildText(listing,price,rrp);
+      var enc=encodeURIComponent(fullText),encTitle=encodeURIComponent(listing.title||'');
+      var dlName='listing-'+(i+1)+'-'+platform.toLowerCase().replace(/\s/g,'-');
+      card.innerHTML=
+        '<div class="card-imgs">'+imgs+'</div>'+
+        '<div class="card-body">'+
+          '<div class="card-group-info">&#128206; '+idxs.length+' photo'+(idxs.length!==1?'s':'')+' grouped &middot; '+esc(sig)+'</div>'+
+          '<div class="card-top">'+
+            '<div><div class="card-num">Listing '+(i+1)+'</div><div class="card-title">'+esc(listing.title)+'</div></div>'+
+            '<div class="card-prices">'+
+              '<div class="card-price">'+esc(price)+'</div>'+
+              (listing.rrp&&parseFloat(listing.rrp)>0?'<div class="card-rrp">'+esc(rrp)+'</div><div class="card-rrp-lbl">RRP</div>':'')+
+            '</div>'+
+          '</div>'+
+          '<div class="confidence-block">'+
+            '<div class="confidence-row">'+
+              '<span class="confidence-label">Pricing</span>'+
+              '<div class="conf-chip '+confidenceClass(listing.priceConfidence)+'">'+esc(listing.priceConfidence||'Medium')+' confidence</div>'+
+            '</div>'+
+            '<div class="price-expl"><strong>Why this price?</strong>'+esc(listing.priceWhy||'Price is based on visible condition, likely brand value, and resale demand.')+'</div>'+
+          '</div>'+
+          '<p class="card-desc">'+esc(listing.description)+'</p>'+
+          '<div class="tag-section-label">'+
+            '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1.5 6.5L5.5 2H11V7.5L7 11.5L1.5 6.5Z" stroke="#a0a0a0" stroke-width="1.3" stroke-linejoin="round" fill="none"/><circle cx="8.5" cy="4.5" r="1" fill="#a0a0a0"/></svg>'+
+            esc(getTagLabel())+
+          '</div>'+
+          '<div class="tags">'+tags+'</div>'+
+        '</div>'+
+        '<div class="card-footer">'+
+          '<div class="badges">'+
+            '<div class="badge"><div class="bdot '+dotClass+'"></div>'+esc(platform)+'</div>'+
+            '<div class="badge '+condCls(listing.condition)+'">'+esc(listing.condition)+'</div>'+
+            (listing.category?'<div class="badge">'+esc(listing.category)+'</div>':'')+
+          '</div>'+
+          '<div class="action-btns">'+
+            '<button class="copy-btn" data-v="'+encTitle+'" onclick="doCopy(this)">&#128203; Title</button>'+
+            '<button class="copy-btn" data-v="'+enc+'" onclick="doCopy(this)">&#128203; Copy all</button>'+
+            '<button class="dl-btn" data-v="'+enc+'" data-name="'+dlName+'" onclick="doDownload(this)">&#8595; Download</button>'+
+          '</div>'+
         '</div>';
-
       cont.appendChild(card);
     });
-
-    document.getElementById('resultsWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('resultsWrap').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  // ── DOWNLOAD ──
-  function doDownload(btn) {
-    var text = decodeURIComponent(btn.dataset.v);
-    var name = (btn.dataset.name || 'listing') + '.txt';
-    triggerDownload(text, name);
-    showToast('↓ Listing downloaded!');
-  }
-
-  function downloadAll() {
-    if (!lastResults.length) return;
-
-    var all = lastResults.map(function (item, i) {
-      var l = item.listing;
-      var baseCurrency = l.currency || 'GBP';
-      var shownSuggested = convertPrice(l.suggestedPrice, baseCurrency, currency);
-      var shownRrp = convertPrice(l.rrp, baseCurrency, currency);
-      var price = fmtPrice(shownSuggested);
-      var rrp = fmtPrice(shownRrp);
-
-      return '══════════════════════════════\nLISTING ' + (i + 1) + ' — ' + platform.toUpperCase() + '\n══════════════════════════════\n' + buildText(l, price, rrp);
+  function doDownload(btn){ var text=decodeURIComponent(btn.dataset.v); triggerDownload((btn.dataset.name||'listing')+'.txt',text); showToast('↓ Listing downloaded!'); }
+  function downloadAll(){
+    if(!lastResults.length) return;
+    var all=lastResults.map(function(item,i){
+      var l=item.listing,price=fmtPrice(convertPrice(l.suggestedPrice,l.currency||'GBP',currency)),rrp=fmtPrice(convertPrice(l.rrp,l.currency||'GBP',currency));
+      return '══════════════════════════════\nLISTING '+(i+1)+' — '+platform.toUpperCase()+'\n══════════════════════════════\n'+buildText(l,price,rrp);
     }).join('\n\n');
-
-    triggerDownload(all, 'sell-smart-listings-' + platform.toLowerCase().replace(/\s/g, '-') + '.txt');
-    showToast('↓ All ' + lastResults.length + ' listings downloaded!');
+    triggerDownload('sell-smart-listings-'+platform.toLowerCase().replace(/\s/g,'-')+'.txt',all);
+    showToast('↓ All '+lastResults.length+' listings downloaded!');
   }
+  function triggerDownload(filename,text){ var blob=new Blob([text],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a'); a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url); }
 
-  function triggerDownload(text, filename) {
-    var blob = new Blob([text], { type: 'text/plain' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // ── HELPERS ──
-  function doCopy(btn) {
-    navigator.clipboard.writeText(decodeURIComponent(btn.dataset.v)).then(function () {
-      var orig = btn.innerHTML;
-      btn.textContent = '✓ Copied!';
-      btn.classList.add('done');
-      setTimeout(function () {
-        btn.innerHTML = orig;
-        btn.classList.remove('done');
-      }, 2000);
-    }).catch(function () {
-      showErr('Copy failed', 'Clipboard access denied. Try copying manually.');
-    });
-  }
-
-  function setLoad(show, title, sub) {
-    document.getElementById('loadWrap').style.display = show ? 'block' : 'none';
-    if (title) document.getElementById('loadTitle').textContent = title;
-    if (sub) document.getElementById('loadSub').textContent = sub;
-  }
-
-  function setProg(pct) {
-    document.getElementById('progFill').style.width = pct + '%';
-    document.getElementById('progLabel').textContent = pct + '%';
-  }
-
-  function showErr(title, msg) {
-    document.getElementById('errTitle').textContent = title || 'Error';
-    document.getElementById('errText').textContent = msg || '';
-    var b = document.getElementById('errBanner');
-    b.classList.add('show');
-    b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  function showWarn(title, msg) {
-    document.getElementById('warnTitle').textContent = title || 'Warning';
-    document.getElementById('warnText').textContent = msg || '';
-    document.getElementById('warnBanner').classList.add('show');
-  }
-
-  function hideBanner(id) {
-    document.getElementById(id).classList.remove('show');
-  }
-
+  function doCopy(btn){ navigator.clipboard.writeText(decodeURIComponent(btn.dataset.v)).then(function(){ var orig=btn.innerHTML;btn.textContent='✓ Copied!';btn.classList.add('done');setTimeout(function(){ btn.innerHTML=orig;btn.classList.remove('done'); },2000); }).catch(function(){ showErr('Copy failed','Clipboard access denied. Try copying manually.'); }); }
+  function setLoad(show,title,sub){ document.getElementById('loadWrap').style.display=show?'block':'none'; if(title) document.getElementById('loadTitle').textContent=title; if(sub) document.getElementById('loadSub').textContent=sub; }
+  function setProg(pct){ document.getElementById('progFill').style.width=pct+'%'; document.getElementById('progLabel').textContent=pct+'%'; }
+  function showErr(title,msg){ document.getElementById('errTitle').textContent=title||'Error';document.getElementById('errText').textContent=msg||'';var b=document.getElementById('errBanner');b.classList.add('show');b.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  function showWarn(title,msg){ document.getElementById('warnTitle').textContent=title||'Warning';document.getElementById('warnText').textContent=msg||'';document.getElementById('warnBanner').classList.add('show'); }
+  function hideBanner(id){ document.getElementById(id).classList.remove('show'); }
   var toastTimer;
-  function showToast(msg) {
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      t.classList.remove('show');
-    }, 2800);
+  function showToast(msg){ var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){ t.classList.remove('show'); },2800); }
+
+  function toggleInfo(tab){ var o=document.getElementById('infoOverlay');o.classList.toggle('open');document.body.style.overflow=o.classList.contains('open')?'hidden':'';if(tab&&o.classList.contains('open')) switchTab(tab); }
+  function closeInfoOutside(e){ if(e.target===document.getElementById('infoOverlay')) toggleInfo(); }
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&document.getElementById('infoOverlay').classList.contains('open')) toggleInfo(); });
+
+  function switchTab(tab){
+    var panes={how:'paneHow',feedback:'paneFeedback'},tabs={how:'tabHow',feedback:'tabFeedback'};
+    Object.keys(panes).forEach(function(k){ document.getElementById(panes[k]).classList.toggle('active',k===tab);document.getElementById(tabs[k]).classList.toggle('active',k===tab); });
   }
 
-  // ── INFO MODAL ──
-  function toggleInfo(tab) {
-    var o = document.getElementById('infoOverlay');
-    o.classList.toggle('open');
-    document.body.style.overflow = o.classList.contains('open') ? 'hidden' : '';
-    if (tab && o.classList.contains('open')) switchTab(tab);
+  var fbSelectedType='Bug report';
+  function selectFbType(btn){ document.querySelectorAll('.fb-type').forEach(function(b){ b.classList.remove('sel'); });btn.classList.add('sel');fbSelectedType=btn.textContent.trim(); }
+  function sendFeedback(){
+    var msg=document.getElementById('fbMsg').value.trim(),name=document.getElementById('fbName').value.trim();
+    if(!msg){ document.getElementById('fbMsg').focus();document.getElementById('fbMsg').style.borderColor='#f87171';return; }
+    document.getElementById('fbMsg').style.borderColor='';
+    var btn=document.getElementById('fbSendBtn');btn.disabled=true;btn.textContent='Opening email...';
+    var nl='\n',subject=encodeURIComponent('[Sell Smart] '+fbSelectedType);
+    var body=encodeURIComponent('Feedback type: '+fbSelectedType+nl+(name?'From: '+name+nl:'')+nl+'Message:'+nl+msg+nl+nl+'---'+nl+'Sent via Sell Smart');
+    var a=document.createElement('a');a.href='mailto:kanke.ishaku@live.com?subject='+subject+'&body='+body;a.target='_blank';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){ document.getElementById('fbForm').style.display='none';document.getElementById('fbSent').style.display='block';btn.disabled=false;btn.textContent='Send feedback →'; },600);
   }
+  function resetFeedback(){ document.getElementById('fbForm').style.display='block';document.getElementById('fbSent').style.display='none';document.getElementById('fbMsg').value='';document.getElementById('fbName').value='';document.querySelectorAll('.fb-type').forEach(function(b,i){ b.classList.toggle('sel',i===0); });fbSelectedType='Bug report'; }
 
-  function closeInfoOutside(e) {
-    if (e.target === document.getElementById('infoOverlay')) toggleInfo();
-  }
+  function resetApp(){ files=[];lastResults=[];compressedCache.clear();document.getElementById('resultsWrap').style.display='none';document.getElementById('emptyState').style.display='block';document.getElementById('photosSection').style.display='none';document.getElementById('genWrap').style.display='none';hideBanner('errBanner');hideBanner('warnBanner');renderThumbs();showToast('Ready for a new listing'); }
 
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.getElementById('infoOverlay').classList.contains('open')) {
-      toggleInfo();
-    }
-  });
-
-  // ── MODAL TABS ──
-  function switchTab(tab) {
-    var panes = { how: 'paneHow', feedback: 'paneFeedback' };
-    var tabs = { how: 'tabHow', feedback: 'tabFeedback' };
-
-    Object.keys(panes).forEach(function (k) {
-      document.getElementById(panes[k]).classList.toggle('active', k === tab);
-      document.getElementById(tabs[k]).classList.toggle('active', k === tab);
-    });
-  }
-
-  // ── FEEDBACK ──
-  var fbSelectedType = 'Bug report';
-
-  function selectFbType(btn) {
-    document.querySelectorAll('.fb-type').forEach(function (b) {
-      b.classList.remove('sel');
-    });
-    btn.classList.add('sel');
-    fbSelectedType = btn.textContent.trim();
-  }
-
-  function sendFeedback() {
-    var msg = document.getElementById('fbMsg').value.trim();
-    var name = document.getElementById('fbName').value.trim();
-
-    if (!msg) {
-      document.getElementById('fbMsg').focus();
-      document.getElementById('fbMsg').style.borderColor = '#f87171';
-      return;
-    }
-
-    document.getElementById('fbMsg').style.borderColor = '';
-    var btn = document.getElementById('fbSendBtn');
-    btn.disabled = true;
-    btn.textContent = 'Opening email…';
-
-    var subject = encodeURIComponent('[Sell Smart] ' + fbSelectedType);
-    var nl = '\n';
-    var body = encodeURIComponent(
-      'Feedback type: ' + fbSelectedType + nl +
-      (name ? 'From: ' + name + nl : '') +
-      nl + 'Message:' + nl + msg + nl + nl + '---' + nl + 'Sent via Sell Smart'
-    );
-
-    var a = document.createElement('a');
-    a.href = 'mailto:kanke.ishaku@live.com?subject=' + subject + '&body=' + body;
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    setTimeout(function () {
-      document.getElementById('fbForm').style.display = 'none';
-      document.getElementById('fbSent').style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Send feedback →';
-    }, 600);
-  }
-
-  function resetFeedback() {
-    document.getElementById('fbForm').style.display = 'block';
-    document.getElementById('fbSent').style.display = 'none';
-    document.getElementById('fbMsg').value = '';
-    document.getElementById('fbName').value = '';
-    document.querySelectorAll('.fb-type').forEach(function (b, i) {
-      b.classList.toggle('sel', i === 0);
-    });
-    fbSelectedType = 'Bug report';
-  }
-
-  // ── INIT ──
   updatePlatformUI();
-  //renderSampleCard();
 </script>
 </body>
 </html>
