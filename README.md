@@ -64,6 +64,10 @@ Each grouped item becomes one listing.
 * Enable bulk export formats such as CSV for marketplace bulk uploads
 * Explore direct integrations with resale platforms (eBay, Vinted, etc.) for one-click listing publishing
 
+## Architecture
+
+![Sell Smart Architecture](images/sell-smart-architecture.svg)
+
 ## Tech stack
 
 | Layer | Tool |
