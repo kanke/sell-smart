@@ -541,8 +541,9 @@
 
 <script>
   const API_BASE = 'https://sell-smart-ivory.vercel.app';
-  const ANALYSIS_MODEL = 'gemini-2.5-flash';
-  const LISTING_MODEL = 'gemini-2.5-flash';
+const ANALYSIS_MODEL = 'gemini-2.5-flash';
+const LISTING_MODEL = 'gemini-2.5-flash';
+const BACKUP_MODEL = 'gemini-2.5-flash-lite';
   const MAX_PHOTOS = 12;
   const MAX_FILE_MB = 25;
 
@@ -682,14 +683,42 @@
 
   async function callGemini(contents,model,generationConfig){
     var res,payload=JSON.stringify({contents:contents,generationConfig:generationConfig||{temperature:0.25,maxOutputTokens:4096}});
-    for(var attempt=0;attempt<3;attempt++){
-      try{ res=await fetch(API_BASE+'/api/gemini?model='+encodeURIComponent(model),{method:'POST',headers:{'Content-Type':'application/json'},body:payload}); }
-      catch(e){ if(attempt===2) throw new Error('Network error — check your connection.'); await delay(1000*(attempt+1)); continue; }
-      if(res.status!==429&&res.status!==503) break;
-      if(attempt<2) await delay(1200*(attempt+1));
+for (var attempt = 0; attempt < 4; attempt++) {
+
+  try {
+    res = await fetch(API_BASE + '/api/gemini?model=' + encodeURIComponent(model), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload
+    });
+
+  } catch (e) {
+
+    if (attempt === 3) throw new Error('Network error — check your internet connection.');
+
+    await delay(1500 * (attempt + 1));
+    continue;
+  }
+
+  if (res.status === 429 || res.status === 503) {
+
+    if (attempt < 3) {
+      setLoad(true, "Model busy", "Retrying AI request...");
+      await delay(1500 * (attempt + 1));
+      continue;
     }
+
+  }
+
+  break;
+}
     var data={};
     try{ data=await res.json(); }catch(e){ throw new Error('Invalid response from server.'); }
+    /* ADD THIS HERE */
+if (!res.ok && model === ANALYSIS_MODEL) {
+  console.warn("Analysis model failed, retrying with backup model...");
+  return callGemini(contents, BACKUP_MODEL, generationConfig);
+}
     if(!res.ok){
       var msg=(data&&data.error&&data.error.message)||data.error||data.message||('API error '+res.status);
       if(res.status===400) throw new Error('Invalid request — try fewer or clearer photos. ('+msg+')');
@@ -786,7 +815,10 @@
       var msg=err.message||'Something went wrong. Please try again.';
       var title='Generation failed';
       if(msg.toLowerCase().includes('network')) title='Connection error';
-      if(msg.toLowerCase().includes('model busy')) title='Model busy';
+      if (msg.toLowerCase().includes('model busy') || msg.toLowerCase().includes('high demand')) {
+  title = 'AI service busy';
+  msg = 'The AI model is experiencing high demand. Retrying usually fixes this — please try again.';
+}
       if(msg.toLowerCase().includes('blocked')) title='Content blocked';
       if(msg.toLowerCase().includes('api')) title='API issue';
       showErr(title,msg);
