@@ -2,6 +2,17 @@
 
 > Built for the GDG London IWD 2026 Hackathon — "Build with AI"
 
+This is Sell Smart...
+
+Sell Smart helps people turn product photos into ready-to-post second-hand listings using AI.
+
+A user uploads photos, the app automatically groups images of the same item, analyses the product, and generates a title, description, suggested resale price, tags, and category in seconds.
+
+It also adapts the listing style for platforms like Vinted, eBay, Depop, and Facebook Marketplace, and gives a price confidence rating with a brief explanation.
+
+So instead of manually writing every listing, users get polished, platform-ready resale content almost instantly.”
+
+
 ## What it does
 
 Upload photos of your second-hand items and Sell Smart generates a complete, ready-to-post listing for you:
