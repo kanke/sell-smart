@@ -417,8 +417,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 <div class="toast" id="toast"></div>
 
 <script>
-  const API_BASE = 'https://sell-smart-ivory.vercel.app/';
-  const ANALYSIS_MODEL = 'gemini-2.5-flash-lite';
+  const API_BASE = 'https://sell-smart-ivory.vercel.app';
+  const ANALYSIS_MODEL = 'gemini-2.5-flash';
   const LISTING_MODEL = 'gemini-2.5-flash';
   const MAX_PHOTOS = 12;
   const MAX_FILE_MB = 25;
@@ -491,7 +491,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         skippedSize++;
         continue;
       }
-      if (files.find(function (x) { return x.name === f.name && x.size === f.size && x.lastModified === f.lastModified; })) {
+      if (files.find(function (x) {
+        return x.name === f.name && x.size === f.size && x.lastModified === f.lastModified;
+      })) {
         skippedDup++;
         continue;
       }
@@ -510,7 +512,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
   function removeFile(i) {
     var f = files[i];
-    if (f) compressedCache.delete(fileCacheKey(f));
+    if (f) {
+      compressedCache.delete(fileCacheKey(f));
+      compressedCache.delete('analysis:' + fileCacheKey(f));
+    }
     files.splice(i, 1);
     hideBanner('warnBanner');
     renderThumbs();
@@ -640,6 +645,74 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     });
   }
 
+  function compressCustom(file, opts) {
+    opts = opts || {};
+
+    var maxKB = opts.maxKB || 900;
+    var maxDimension = opts.maxDimension || 1400;
+    var qualityStart = opts.qualityStart || 0.86;
+    var qualityMin = opts.qualityMin || 0.22;
+    var qualityStep = opts.qualityStep || 0.08;
+
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+
+      reader.onerror = function () {
+        reject(new Error('Could not read: ' + file.name));
+      };
+
+      reader.onload = function (e) {
+        var img = new Image();
+
+        img.onerror = function () {
+          reject(new Error('Could not load image: ' + file.name));
+        };
+
+        img.onload = function () {
+          try {
+            var canvas = document.createElement('canvas');
+            var w = img.width;
+            var h = img.height;
+
+            if (w > maxDimension || h > maxDimension) {
+              var scale = maxDimension / Math.max(w, h);
+              w = Math.round(w * scale);
+              h = Math.round(h * scale);
+            }
+
+            canvas.width = w;
+            canvas.height = h;
+
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+
+            var q = qualityStart;
+
+            function go() {
+              var d = canvas.toDataURL('image/jpeg', q);
+              var approxKB = (d.length * 3 / 4) / 1024;
+
+              if (approxKB > maxKB && q > qualityMin) {
+                q -= qualityStep;
+                go();
+              } else {
+                resolve(d.split(',')[1]);
+              }
+            }
+
+            go();
+          } catch (err) {
+            reject(new Error('Compression failed: ' + err.message));
+          }
+        };
+
+        img.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function compressOnce(file, maxKB) {
     var key = fileCacheKey(file);
     if (compressedCache.has(key)) return compressedCache.get(key);
@@ -648,24 +721,48 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     return result;
   }
 
+  async function compressForAnalysis(file) {
+    var key = 'analysis:' + fileCacheKey(file);
+    if (compressedCache.has(key)) return compressedCache.get(key);
+
+    var result = await compressCustom(file, {
+      maxKB: 280,
+      maxDimension: 900,
+      qualityStart: 0.72,
+      qualityMin: 0.18,
+      qualityStep: 0.08
+    });
+
+    compressedCache.set(key, result);
+    return result;
+  }
+
   // ── GEMINI API ──
   async function callGemini(contents, model, generationConfig) {
     var res;
+    var payload = JSON.stringify({
+      contents: contents,
+      generationConfig: generationConfig || {
+        temperature: 0.25,
+        maxOutputTokens: 4096
+      }
+    });
 
-    try {
-      res = await fetch(API_BASE + '/api/gemini?model=' + encodeURIComponent(model), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: contents,
-          generationConfig: generationConfig || {
-            temperature: 0.25,
-            maxOutputTokens: 4096
-          }
-        })
-      });
-    } catch (e) {
-      throw new Error('Network error — check your internet connection and try again.');
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        res = await fetch(API_BASE + '/api/gemini?model=' + encodeURIComponent(model), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload
+        });
+      } catch (e) {
+        if (attempt === 2) throw new Error('Network error — check your internet connection and try again.');
+        await delay(1000 * (attempt + 1));
+        continue;
+      }
+
+      if (res.status !== 429 && res.status !== 503) break;
+      if (attempt < 2) await delay(1200 * (attempt + 1));
     }
 
     var data = {};
@@ -685,7 +782,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       if (res.status === 400) throw new Error('Invalid request — please try fewer or clearer photos. (' + msg + ')');
       if (res.status === 401) throw new Error('Server API key missing or invalid.');
       if (res.status === 403) throw new Error('Access denied by AI service. Check server configuration.');
-      if (res.status === 429) throw new Error('Rate limited — wait a moment and try again.');
+      if (res.status === 429 || res.status === 503) throw new Error('Model busy — high demand right now. Please try again in a moment.');
       if (res.status >= 500) throw new Error('Server error — try again shortly. (' + msg + ')');
       throw new Error(msg);
     }
@@ -697,6 +794,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     }
 
     return data.candidates[0].content.parts[0].text || '';
+  }
+
+  function delay(ms) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
   }
 
   function parseJ(raw) {
@@ -712,7 +815,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     var parts = [];
 
     for (var i = 0; i < fs.length; i++) {
-      var data = await compressOnce(fs[i], 900);
+      var data = await compressForAnalysis(fs[i]);
       parts.push({
         inlineData: {
           mimeType: 'image/jpeg',
@@ -726,6 +829,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         'Analyse all uploaded product photos together.\n' +
         'Some photos may show the same item from different angles.\n' +
         'Group matching photos into the same item.\n\n' +
+        'If all photos appear to show the same item,\n' +
+        'return one group containing all photoIndexes.\n\n' +
         'Return ONLY valid JSON in this format:\n' +
         '{\n' +
         '  "items": [\n' +
@@ -762,7 +867,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       throw new Error('Could not analyse uploaded photos as a batch.');
     }
 
-    // normalise
     return parsed.items.map(function (item, idx) {
       return {
         groupId: item.groupId || (idx + 1),
@@ -851,11 +955,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
       var groupedItems = await analyseAllImagesBatch(files);
 
-      // fallback if Gemini misses an image
       var covered = new Set();
       groupedItems.forEach(function (item) {
         item.photoIndexes.forEach(function (idx) { covered.add(idx); });
       });
+
       for (var i = 0; i < files.length; i++) {
         if (!covered.has(i)) {
           groupedItems.push({
@@ -906,7 +1010,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       var title = 'Generation failed';
 
       if (msg.toLowerCase().includes('network')) title = 'Connection error';
-      if (msg.toLowerCase().includes('rate limited')) title = 'Rate limited';
+      if (msg.toLowerCase().includes('model busy') || msg.toLowerCase().includes('high demand')) title = 'Model busy';
       if (msg.toLowerCase().includes('blocked')) title = 'Content blocked';
       if (msg.toLowerCase().includes('api')) title = 'API issue';
 

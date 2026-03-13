@@ -4,79 +4,110 @@
 
 ## What it does
 
-Upload photos of your second-hand items and Sell Smart instantly generates a complete, ready-to-post listing for you:
+Upload photos of your second-hand items and Sell Smart generates a complete, ready-to-post listing for you:
 
 - **Title** — catchy and searchable
 - **Description** — detailed and honest
-- **Suggested resale price** (GBP)
+- **Suggested resale price**
 - **Estimated RRP**
 - **Tags** for discoverability
-- **Category** matched to the platform
+- **Category** matched to the selected platform
 
 Supports **Vinted, eBay, Depop, and Facebook Marketplace** formatting.
 
-### The smart part: automatic photo grouping
+## The smart part: automatic photo grouping
 
-Upload 10 photos of 3 different items and Sell Smart figures out which photos belong to the same product. It does this by asking Gemini to extract a "product signature" (brand + model + type + colour) from each photo, then clusters photos with matching signatures together. Each cluster becomes one listing.
+Upload up to **10 photos** across multiple items and Sell Smart works out which photos belong to the same product.
+
+Instead of generating one request per image and one more request per grouped item, the app now uses a more efficient two-step flow:
+
+1. **Batch image analysis**
+    - All uploaded images are compressed once in the browser
+    - Gemini analyses them together in a single batch
+    - It returns grouped items with structured metadata such as:
+        - brand
+        - model
+        - product type
+        - colour
+        - condition
+        - gender
+        - size
+        - product signature
+
+2. **Listing generation from metadata**
+    - Each grouped item is then turned into a final listing using its metadata
+    - This avoids re-uploading the same images repeatedly
+    - The result is faster generation, lower quota usage, and better reliability
+
+Each grouped item becomes one listing.
 
 ## Tech stack
 
 | Layer | Tool |
 |---|---|
-| AI vision + text | **Google Gemini 1.5 Flash** |
+| AI image analysis | **Google Gemini 2.5 Flash Lite** |
+| AI listing generation | **Google Gemini 2.5 Flash** |
 | Frontend | Vanilla HTML/CSS/JS (single file, no build step) |
-| Hosting | GitHub Pages / Vercel |
+| Backend proxy | Vercel Serverless Function |
+| Hosting | GitHub Pages + Vercel |
 
 ## How to run
 
-### Option 1 — Open locally
-Just open `index.html` in your browser. No server needed.
+### Option 1 — Frontend on GitHub Pages + backend on Vercel
+This is the recommended setup.
 
-### Option 2 — Deploy to Vercel
 1. Push this repo to GitHub
-2. Go to [vercel.com](https://vercel.com) → Import Project → select your repo
-3. Click Deploy — done
+2. Deploy the repo to **Vercel**
+3. Add your Gemini API key in Vercel as an environment variable:
+    - `GEMINI_API_KEY=your_new_key_here`
+4. Make sure the frontend calls your Vercel API endpoint
+5. Enable GitHub Pages for the frontend if desired
 
-### Option 3 — GitHub Pages
-1. Push to GitHub
-2. Go to repo Settings → Pages → Source: main branch / root
-3. Your app will be live at `https://yourusername.github.io/sell-smart`
+### Option 2 — Deploy everything from the same repo
+You can use the same GitHub repo for both:
 
-## Getting a Gemini API key
+- **GitHub Pages** serves `index.html`
+- **Vercel** serves the secure API proxy in `api/gemini.js`
 
-1. Go to [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-2. Click "Create API key"
-3. It's free — the free tier is more than enough for this app
+## Important security note
 
-Paste your key into the app's API key field. It's stored in `sessionStorage` only (never sent anywhere except Google's API).
+Sell Smart no longer stores or uses a Gemini API key in the browser.
 
-## How the photo grouping works
+The app uses a **server-side proxy** hosted on Vercel so the API key stays hidden and secure.
 
-```
-1. For each uploaded image:
-   → Gemini analyses it and returns a JSON "product signature"
-      { brand, model, productType, color, condition, productSignature }
+## How the AI flow works
 
-2. Clustering algorithm:
-   → Compare every pair of images
-   → Two images are in the same cluster if:
-      - They have the same productType, AND
-      - Same brand OR ≥50% overlapping signature words
+```text
+1. User uploads up to 12 photos
+   → Images are compressed once in the browser and cached
 
-3. Each cluster → one Gemini API call with all cluster images
-   → Returns the full listing JSON
-```
+2. Batch analysis request
+   → All images are sent together to Gemini
+   → Gemini returns grouped item metadata:
+      {
+        groupId,
+        photoIndexes,
+        brand,
+        model,
+        productType,
+        color,
+        condition,
+        gender,
+        size,
+        productSignature
+      }
 
-## Project structure
+3. Listing generation request
+   → Each grouped item is sent as metadata only
+   → Gemini returns listing JSON:
+      {
+        title,
+        description,
+        suggestedPrice,
+        rrp,
+        condition,
+        category,
+        tags
+      }
 
-```
-sell-smart/
-├── index.html     # Entire app — single file, no dependencies
-└── README.md
-```
-
-## Built with
-
-- Google Gemini 1.5 Flash (multimodal AI)
-- Zero npm packages, zero build tools
-- Designed for resellers on Vinted, eBay, Depop, Facebook Marketplace
+4. UI renders one final resale listing per grouped item
