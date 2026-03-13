@@ -197,6 +197,119 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .fb-sent-icon { font-size: 2.2rem; margin-bottom: 10px; }
 .fb-sent h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
 .fb-sent p { font-size: 0.84rem; color: var(--text2); line-height: 1.6; }
+
+body.platform-vinted {
+  --accent: #09b1ba;
+  --accent-soft: rgba(9,177,186,0.18);
+}
+body.platform-ebay {
+  --accent: #e53238;
+  --accent-soft: rgba(229,50,56,0.18);
+}
+body.platform-depop {
+  --accent: #ff4040;
+  --accent-soft: rgba(255,64,64,0.18);
+}
+body.platform-facebook {
+  --accent: #1877f2;
+  --accent-soft: rgba(24,119,242,0.18);
+}
+
+body[class*="platform-"] .gen-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 55%, #e84dbd 100%);
+}
+
+body[class*="platform-"] .download-all-btn:hover,
+body[class*="platform-"] .copy-btn:hover,
+body[class*="platform-"] .hicon-btn:hover {
+  border-color: var(--accent);
+}
+
+body[class*="platform-"] .tag {
+  border-color: var(--accent-soft);
+}
+
+.sample-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.sample-card-top {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.sample-card-body {
+  padding: 16px;
+}
+
+.sample-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.sample-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.sample-meta {
+  font-size: 0.78rem;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.sample-desc {
+  font-size: 0.83rem;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+
+.price-expl {
+  font-size: 0.77rem;
+  color: var(--text2);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+
+.conf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid var(--border2);
+}
+
+.conf-high {
+  background: rgba(34,197,94,.12);
+  color: #86efac;
+  border-color: rgba(34,197,94,.25);
+}
+.conf-medium {
+  background: rgba(234,179,8,.12);
+  color: #fde047;
+  border-color: rgba(234,179,8,.25);
+}
+.conf-low {
+  background: rgba(239,68,68,.12);
+  color: #fca5a5;
+  border-color: rgba(239,68,68,.25);
+}
+
 @media (max-width: 600px) {
   .header { padding: 0 16px; }
   .main { padding: 32px 16px 80px; }
@@ -219,7 +332,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   </a>
   <div class="header-controls">
     <div class="hsel">
-      <select id="platformSel" onchange="platform=this.value">
+      <select id="platformSel" onchange="platform=this.value; updatePlatformUI();">
         <option value="Vinted">🏷 Vinted</option>
         <option value="eBay">🛒 eBay</option>
         <option value="Depop">👗 Depop</option>
@@ -227,7 +340,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </select>
     </div>
     <div class="hsel">
-      <select id="currencySel" onchange="currency=this.value">
+      <select id="currencySel" onchange="currency=this.value; onCurrencyChange();">
         <option value="GBP">£ GBP</option>
         <option value="EUR">€ EUR</option>
         <option value="USD">$ USD</option>
@@ -329,6 +442,17 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     <p>Transform product photos into professional listings in seconds with AI-powered analysis</p>
   </div>
 
+<!--  <div id="sampleCarousel" style="margin:0 0 28px">-->
+<!--    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">-->
+<!--      <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(&#45;&#45;text2)">Sample output</div>-->
+<!--      <div style="display:flex;gap:8px">-->
+<!--        <button class="hicon-btn" type="button" onclick="moveSample(-1)">←</button>-->
+<!--        <button class="hicon-btn" type="button" onclick="moveSample(1)">→</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div id="sampleCardWrap"></div>-->
+<!--  </div>-->
+
   <!-- BANNERS -->
   <div id="errBanner" class="banner err-banner">
     <span class="banner-icon">⚠️</span>
@@ -378,8 +502,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   <div id="genWrap" style="display:none">
     <button class="gen-btn" id="genBtn" onclick="generate()">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="white"><path d="M8 1l1.2 5.2L15 5l-4 3 4 3-5.8-1.2L8 15l-1.2-5.2L1 11l4-3-4-3 5.8 1.2L8 1z"/></svg>
-      Analyze &amp; Generate Listings
+      <span id="genBtnText">Generate Vinted Listing</span>
     </button>
+    <div id="platformMeta" style="margin:-8px 0 18px;text-align:center">
+      <div id="platformHint" style="font-size:0.82rem;color:var(--text2)">Casual, honest, size-first listing style</div>
+      <div id="platformTone" style="font-size:0.74rem;color:var(--text3);margin-top:4px">Tone: casual &amp; concise</div>
+    </div>
   </div>
 
   <!-- LOADING -->
@@ -428,9 +556,80 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   let platform = 'Vinted';
   let currency = 'GBP';
   let lastResults = [];
+  let sampleIndex = 0;
+
+  const FX = {
+    GBP: 1,
+    EUR: 1.17,
+    USD: 1.28
+  };
+
+  const SAMPLE_LISTINGS = [
+    {
+      platform: 'Vinted',
+      title: 'Nike Air Force 1 White Trainers UK 6',
+      price: '£42.00',
+      confidence: 'High',
+      why: 'Strong brand recognition, popular resale model, visible good condition, and multiple angles support pricing confidence.',
+      desc: 'Classic Nike Air Force 1 trainers in white with a clean everyday look. Great for casual wear and easy to style. Good pre-owned condition with normal signs of wear.'
+    },
+    {
+      platform: 'Depop',
+      title: 'Oversized Zara Blazer in Camel',
+      price: '£28.00',
+      confidence: 'Medium',
+      why: 'Pricing is based on visible style appeal, likely high-street brand value, and condition, but exact collection or year is unclear.',
+      desc: 'Chic oversized Zara blazer in a warm camel tone. Easy to pair with trousers, denim, or skirts for a polished look. A strong wardrobe staple with timeless styling potential.'
+    },
+    {
+      platform: 'eBay',
+      title: 'Apple iPhone 12 Black 128GB Smartphone',
+      price: '£235.00',
+      confidence: 'Medium',
+      why: 'Recognisable model and category support pricing, though storage, battery health, and full working condition should ideally be confirmed.',
+      desc: 'Apple iPhone 12 in black with a sleek design and strong everyday performance. Great option for someone looking for a reliable Apple handset. Listing can be refined further with storage and battery details.'
+    }
+  ];
 
   function sym() {
     return { GBP: '£', EUR: '€', USD: '$' }[currency] || '£';
+  }
+
+  function fileCacheKey(file) {
+    return file.name + ':' + file.size + ':' + file.lastModified;
+  }
+
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function getTagLabel() {
+    if (platform === 'eBay') return 'Keywords';
+    if (platform === 'Depop') return 'Style tags';
+    if (platform === 'Facebook Marketplace') return 'Search terms';
+    return 'Search tags';
+  }
+
+  function convertPrice(value, fromCurrency, toCurrency) {
+    var n = parseFloat(value);
+    if (isNaN(n)) return value;
+
+    var fromRate = FX[fromCurrency] || 1;
+    var toRate = FX[toCurrency] || 1;
+
+    var gbpValue = n / fromRate;
+    return gbpValue * toRate;
+  }
+
+  function onCurrencyChange() {
+    if (lastResults.length) {
+      renderResults(lastResults);
+      showWarn('Currency updated', 'Prices are shown using estimated conversion rates.');
+    }
   }
 
   // ── FILE INPUT ──
@@ -466,10 +665,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     uploadZone.classList.remove('drag-over');
     if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
   });
-
-  function fileCacheKey(file) {
-    return file.name + ':' + file.size + ':' + file.lastModified;
-  }
 
   function handleFiles(incoming) {
     hideBanner('errBanner');
@@ -579,6 +774,94 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       d.innerHTML = '<img src="' + url + '" alt="photo"><button class="rm" onclick="removeFile(' + i + ')">✕</button>';
       grid.appendChild(d);
     });
+  }
+
+  // ── PLATFORM UI ──
+  function updatePlatformUI() {
+    var hints = {
+      'Vinted': {
+        button: 'Generate Vinted Listing',
+        hint: 'Casual, honest, size-first listing style',
+        tone: 'Tone: casual & concise',
+        bodyClass: 'platform-vinted'
+      },
+      'eBay': {
+        button: 'Generate eBay Listing',
+        hint: 'Keyword-rich, detailed, search-friendly listing style',
+        tone: 'Tone: detailed & search-optimised',
+        bodyClass: 'platform-ebay'
+      },
+      'Depop': {
+        button: 'Generate Depop Listing',
+        hint: 'Trend-led, conversational, style-focused listing style',
+        tone: 'Tone: trendy & editorial',
+        bodyClass: 'platform-depop'
+      },
+      'Facebook Marketplace': {
+        button: 'Generate Facebook Listing',
+        hint: 'Direct, practical, local-buyer listing style',
+        tone: 'Tone: simple & direct',
+        bodyClass: 'platform-facebook'
+      }
+    };
+
+    var cfg = hints[platform] || hints['Vinted'];
+
+    var genBtnText = document.getElementById('genBtnText');
+    var platformHint = document.getElementById('platformHint');
+    var platformTone = document.getElementById('platformTone');
+
+    if (genBtnText) genBtnText.textContent = cfg.button;
+    if (platformHint) platformHint.textContent = cfg.hint;
+    if (platformTone) platformTone.textContent = cfg.tone;
+
+    document.body.classList.remove('platform-vinted', 'platform-ebay', 'platform-depop', 'platform-facebook');
+    document.body.classList.add(cfg.bodyClass);
+
+    //renderSampleCard();
+    if (lastResults.length) renderResults(lastResults);
+  }
+
+  // ── SAMPLE CAROUSEL ──
+  function confidenceClass(level) {
+    var x = String(level || '').toLowerCase();
+    if (x === 'high') return 'conf-high';
+    if (x === 'medium') return 'conf-medium';
+    return 'conf-low';
+  }
+
+  function renderSampleCard() {
+    var wrap = document.getElementById('sampleCardWrap');
+    if (!wrap) return;
+
+    var item = SAMPLE_LISTINGS[sampleIndex];
+    var tagLabel = getTagLabel();
+
+    wrap.innerHTML =
+      '<div class="sample-card">' +
+        '<div class="sample-card-top">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">' +
+            '<div class="badge"><div class="bdot bdot-' + item.platform.split(' ')[0] + '"></div>' + esc(item.platform) + '</div>' +
+            '<div class="conf-chip ' + confidenceClass(item.confidence) + '">Price confidence: ' + esc(item.confidence) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="sample-card-body">' +
+          '<div class="sample-title">' + esc(item.title) + '</div>' +
+          '<div class="sample-price">' + esc(item.price) + '</div>' +
+          '<div class="sample-meta">Example AI-generated listing preview</div>' +
+          '<div class="sample-desc">' + esc(item.desc) + '</div>' +
+          '<div style="font-size:0.72rem;color:var(--text3);margin-bottom:6px">' + esc(tagLabel) + '</div>' +
+          '<div class="tags">' +
+            '<span class="tag">brand</span><span class="tag">style</span><span class="tag">condition</span>' +
+          '</div>' +
+          '<div class="price-expl"><strong style="color:var(--text)">Why this price?</strong><br>' + esc(item.why) + '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function moveSample(dir) {
+    sampleIndex = (sampleIndex + dir + SAMPLE_LISTINGS.length) % SAMPLE_LISTINGS.length;
+    //renderSampleCard();
   }
 
   // ── COMPRESS ──
@@ -831,6 +1114,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         'Group matching photos into the same item.\n\n' +
         'If all photos appear to show the same item,\n' +
         'return one group containing all photoIndexes.\n\n' +
+        'Also estimate a resale pricing confidence for each item as High, Medium, or Low.\n' +
+        'Also provide a short explanation for why the suggested price range makes sense.\n\n' +
         'Return ONLY valid JSON in this format:\n' +
         '{\n' +
         '  "items": [\n' +
@@ -844,7 +1129,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         '      "condition": "New|Like New|Good|Fair|Poor",\n' +
         '      "gender": "Men|Women|Unisex|N/A",\n' +
         '      "size": "size if visible else null",\n' +
-        '      "productSignature": "combined signature"\n' +
+        '      "productSignature": "combined signature",\n' +
+        '      "priceConfidence": "High|Medium|Low",\n' +
+        '      "priceWhy": "short explanation"\n' +
         '    }\n' +
         '  ]\n' +
         '}\n\n' +
@@ -880,7 +1167,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         condition: item.condition || 'Good',
         gender: item.gender || 'Unisex',
         size: item.size || null,
-        productSignature: item.productSignature || ((item.brand || 'Unknown') + ' ' + (item.productType || 'Item'))
+        productSignature: item.productSignature || ((item.brand || 'Unknown') + ' ' + (item.productType || 'Item')),
+        priceConfidence: item.priceConfidence || 'Medium',
+        priceWhy: item.priceWhy || 'Price is based on visible brand, condition, and likely resale demand.'
       };
     }).filter(function (item) {
       return item.photoIndexes.length > 0;
@@ -896,13 +1185,23 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       'Facebook Marketplace': 'Casual and direct. Keep it simple and practical.'
     };
 
+    var tagGuidance =
+      platform === 'Vinted'
+        ? 'Focus tags on brand, size, colour, condition, and item type.'
+        : platform === 'eBay'
+        ? 'Focus tags on searchable keywords, brand, model, material, and item specifics.'
+        : platform === 'Depop'
+        ? 'Focus tags on style, aesthetic, vibe, era, and discovery-friendly fashion terms.'
+        : 'Focus tags on practical, simple buyer-friendly search terms.';
+
     var prompt = [{
       role: 'user',
       parts: [{
         text:
           'You are an expert resale listing writer for ' + platform + '.\n\n' +
           'Style guide: ' + (guides[platform] || '') + '\n' +
-          'Currency: ' + currency + ' (use symbol ' + sym() + ')\n\n' +
+          'Currency: ' + currency + ' (use symbol ' + sym() + ')\n' +
+          'Tag guidance: ' + tagGuidance + '\n\n' +
           'Item metadata:\n' + JSON.stringify(groupMeta, null, 2) + '\n\n' +
           'Return ONLY valid JSON:\n' +
           '{\n' +
@@ -912,7 +1211,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
           '  "rrp": 0,\n' +
           '  "condition": "New|Like New|Good|Fair|Poor",\n' +
           '  "category": "accurate ' + platform + ' category",\n' +
-          '  "tags": ["8-12 search tags"]\n' +
+          '  "tags": ["8-12 platform-specific search tags suited to ' + platform + '" ]\n' +
           '}'
       }]
     }];
@@ -923,7 +1222,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       { temperature: 0.35, maxOutputTokens: 2048 }
     );
 
-    return parseJ(raw) || {
+    var parsed = parseJ(raw) || {
       title: 'Item for Sale',
       description: 'Pre-owned item in good condition.',
       suggestedPrice: 0,
@@ -932,6 +1231,20 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       category: 'Other',
       tags: []
     };
+
+    parsed.currency = currency;
+    return parsed;
+  }
+
+  // ── SMARTER LOADING COPY ──
+  function getAnalysisLoadSub(step, total, fileName) {
+    var messages = [
+      'Detecting product type…',
+      'Reading visible brand and style cues…',
+      'Checking whether angles belong to the same item…',
+      'Grouping matching photos…'
+    ];
+    return messages[Math.min(step, messages.length - 1)] + (fileName ? ' · ' + fileName : '');
   }
 
   // ── MAIN GENERATE ──
@@ -943,14 +1256,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
     hideBanner('errBanner');
     hideBanner('warnBanner');
-    setLoad(true, 'Preparing photos', 'Compressing images…');
+    setLoad(true, 'Preparing photos', 'Compressing images for faster AI analysis…');
     setProg(5);
     document.getElementById('genBtn').disabled = true;
     document.getElementById('resultsWrap').style.display = 'none';
     document.getElementById('emptyState').style.display = 'none';
 
     try {
-      setLoad(true, 'Analysing photos', 'Grouping matching items…');
+      setLoad(true, 'Analysing photos', getAnalysisLoadSub(0, files.length, files[0] && files[0].name));
       setProg(25);
 
       var groupedItems = await analyseAllImagesBatch(files);
@@ -972,18 +1285,24 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
             condition: 'Good',
             gender: 'Unisex',
             size: null,
-            productSignature: files[i].name
+            productSignature: files[i].name,
+            priceConfidence: 'Low',
+            priceWhy: 'Not enough clear visual detail was available, so pricing confidence is lower.'
           });
         }
       }
 
-      setLoad(true, 'Writing listings', 'Generating final listing copy…');
+      setLoad(true, 'Writing listings', 'Writing listing copy in ' + platform + ' style…');
       setProg(60);
 
       var results = [];
       for (var g = 0; g < groupedItems.length; g++) {
         var item = groupedItems[g];
+        setLoad(true, 'Writing listing ' + (g + 1) + ' of ' + groupedItems.length, 'Writing listing copy and pricing guidance…');
         var listing = await genListingFromMeta(item);
+
+        listing.priceConfidence = item.priceConfidence || 'Medium';
+        listing.priceWhy = item.priceWhy || 'Price is based on visible condition, likely brand value, and resale demand.';
 
         results.push({
           listing: listing,
@@ -1037,14 +1356,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     return isNaN(x) ? String(n || '—') : sym() + x.toFixed(2);
   }
 
-  function esc(s) {
-    return String(s || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
   function buildText(listing, price, rrp) {
     return [
       listing.title,
@@ -1054,6 +1365,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       'Condition: ' + listing.condition,
       'Price: ' + price + (listing.rrp && parseFloat(listing.rrp) > 0 ? '  (RRP: ' + rrp + ')' : ''),
       listing.category ? 'Category: ' + listing.category : '',
+      listing.priceConfidence ? 'Price confidence: ' + listing.priceConfidence : '',
+      listing.priceWhy ? 'Why this price?: ' + listing.priceWhy : '',
       '',
       (listing.tags || []).map(function (t) { return '#' + t; }).join(' ')
     ].join('\n').trim();
@@ -1069,6 +1382,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       var listing = item.listing;
       var idxs = item.idxs;
       var metas = item.metas;
+
+      var baseCurrency = listing.currency || 'GBP';
+      var shownSuggested = convertPrice(listing.suggestedPrice, baseCurrency, currency);
+      var shownRrp = convertPrice(listing.rrp, baseCurrency, currency);
 
       var card = document.createElement('div');
       card.className = 'listing-card';
@@ -1086,8 +1403,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         return m.productSignature;
       }).filter(Boolean).join(' · ');
 
-      var price = fmtPrice(listing.suggestedPrice);
-      var rrp = fmtPrice(listing.rrp);
+      var price = fmtPrice(shownSuggested);
+      var rrp = fmtPrice(shownRrp);
       var dotClass = 'bdot-' + platform.split(' ')[0];
       var fullText = buildText(listing, price, rrp);
       var enc = encodeURIComponent(fullText);
@@ -1105,8 +1422,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
               (listing.rrp && parseFloat(listing.rrp) > 0 ? '<div class="card-rrp">' + esc(rrp) + '</div><div class="card-rrp-lbl">RRP</div>' : '') +
             '</div>' +
           '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
+            '<div class="conf-chip ' + confidenceClass(listing.priceConfidence) + '">Price confidence: ' + esc(listing.priceConfidence || 'Medium') + '</div>' +
+          '</div>' +
           '<p class="card-desc">' + esc(listing.description) + '</p>' +
+          '<div style="font-size:0.72rem;color:var(--text3);margin-bottom:6px">' + esc(getTagLabel()) + '</div>' +
           '<div class="tags">' + tags + '</div>' +
+          '<div class="price-expl"><strong style="color:var(--text)">Why this price?</strong><br>' + esc(listing.priceWhy || 'Price is based on visible condition, likely brand value, and resale demand.') + '</div>' +
         '</div>' +
         '<div class="card-footer">' +
           '<div class="badges">' +
@@ -1140,8 +1462,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
     var all = lastResults.map(function (item, i) {
       var l = item.listing;
-      var price = fmtPrice(l.suggestedPrice);
-      var rrp = fmtPrice(l.rrp);
+      var baseCurrency = l.currency || 'GBP';
+      var shownSuggested = convertPrice(l.suggestedPrice, baseCurrency, currency);
+      var shownRrp = convertPrice(l.rrp, baseCurrency, currency);
+      var price = fmtPrice(shownSuggested);
+      var rrp = fmtPrice(shownRrp);
 
       return '══════════════════════════════\nLISTING ' + (i + 1) + ' — ' + platform.toUpperCase() + '\n══════════════════════════════\n' + buildText(l, price, rrp);
     }).join('\n\n');
@@ -1305,6 +1630,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     });
     fbSelectedType = 'Bug report';
   }
+
+  // ── INIT ──
+  updatePlatformUI();
+  //renderSampleCard();
 </script>
 </body>
 </html>
