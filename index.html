@@ -234,7 +234,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </select>
     </div>
     <button class="hicon-btn" onclick="toggleInfo('how')" title="How it works">ⓘ</button>
-    <button class="hicon-btn" onclick="toggleInfo('feedback')" title="Send feedback " style="font-size:0.8rem">💬</button>
+    <button class="hicon-btn" onclick="toggleInfo('feedback')" title="Send feedback" style="font-size:0.8rem">💬</button>
   </div>
 </header>
 
@@ -246,8 +246,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       <button class="modal-close" onclick="toggleInfo()">✕</button>
     </div>
     <div class="modal-tabs">
-      <button class="modal-tab active" id="tabHow" onclick="switchTab('how')">ℹ️ How it works</button>
-      <button class="modal-tab" id="tabFeedback" onclick="switchTab('feedback')">💬 Feedback</button>
+      <button class="modal-tab active" id="tabHow" onclick="switchTab('how')">How it works</button>
+      <button class="modal-tab" id="tabFeedback" onclick="switchTab('feedback')">Feedback &amp; Ideas</button>
     </div>
     <div class="modal-pane active" id="paneHow">
       <div class="modal-body">
@@ -291,6 +291,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
             <textarea id="fbMsg" class="fb-input" rows="4" placeholder="Tell us what you think, what's broken, or what you'd love to see next…"></textarea>
           </div>
           <button class="fb-send" id="fbSendBtn" onclick="sendFeedback()">Send feedback →</button>
+          <p style="text-align:center;margin-top:12px;font-size:0.75rem;color:var(--text3)">Or email us directly: <a href="mailto:kanke.ishaku@live.com" style="color:#a78bfa;text-decoration:none">kanke.ishaku@live.com</a></p>
         </div>
         <div id="fbSent" class="fb-sent" style="display:none">
           <div class="fb-sent-icon">🎉</div>
@@ -829,34 +830,35 @@ var fbSelectedType='Bug report';
 function selectFbType(btn){
   document.querySelectorAll('.fb-type').forEach(function(b){b.classList.remove('sel');});
   btn.classList.add('sel');
-  fbSelectedType=btn.textContent.replace(/^[^a-zA-Z]+/,'').trim();
+  fbSelectedType=btn.textContent.trim();
 }
 function sendFeedback(){
   var msg=document.getElementById('fbMsg').value.trim();
   var name=document.getElementById('fbName').value.trim();
-  if(!msg){document.getElementById('fbMsg').focus();document.getElementById('fbMsg').style.borderColor='#f87171';return;}
+  if(!msg){
+    document.getElementById('fbMsg').focus();
+    document.getElementById('fbMsg').style.borderColor='#f87171';
+    return;
+  }
   document.getElementById('fbMsg').style.borderColor='';
   var btn=document.getElementById('fbSendBtn');
-  btn.disabled=true;btn.textContent='Sending…';
-  var subject=encodeURIComponent('Sell Smart Feedback: '+fbSelectedType);
+  btn.disabled=true; btn.textContent='Opening email…';
+  var subject=encodeURIComponent('[Sell Smart] '+fbSelectedType);
+  var nl='\n';
   var body=encodeURIComponent(
-    'Type: '+fbSelectedType+'
-'+
-    (name?'From: '+name+'
-':'')+
-    '
-Message:
-'+msg+'
-
----
-Sent from Sell Smart app'
+    'Feedback type: '+fbSelectedType+nl+
+    (name?'From: '+name+nl:'')+
+    nl+'Message:'+nl+msg+nl+nl+'---'+nl+'Sent via Sell Smart'
   );
-  window.location.href='mailto:kanke.ishaku@live.com?subject='+subject+'&body='+body;
+  var a=document.createElement('a');
+  a.href='mailto:kanke.ishaku@live.com?subject='+subject+'&body='+body;
+  a.target='_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){
     document.getElementById('fbForm').style.display='none';
     document.getElementById('fbSent').style.display='block';
-    btn.disabled=false;btn.textContent='Send feedback →';
-  },800);
+    btn.disabled=false; btn.textContent='Send feedback →';
+  },600);
 }
 function resetFeedback(){
   document.getElementById('fbForm').style.display='block';
