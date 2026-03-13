@@ -41,6 +41,18 @@ Instead of generating one request per image and one more request per grouped ite
 
 Each grouped item becomes one listing.
 
+## Future Improvements
+•	Chatbot for customer support and onboarding guidance
+•	Explore whether the information / feedback section should remain a modal or evolve into a conversational help interface
+•	Create a mobile app version of Sell Smart for faster photo capture and listing creation
+•	Improve privacy controls around uploaded images (e.g., automatic deletion, clearer messaging that images are compressed client-side)
+•	Enhance pricing suggestions by incorporating external resale signals such as marketplace demand or sold-listing data
+•	Integrate a live foreign exchange API so currency switching reflects real-time exchange rates instead of static values
+•	Improve product recognition accuracy (brand detection, logo recognition, model identification)
+•	Provide listing quality scoring to help users optimise their resale listings
+•	Enable bulk export formats such as CSV for marketplace bulk uploads
+•	Explore direct integrations with resale platforms (eBay, Vinted, etc.) for one-click listing publishing
+
 ## Tech stack
 
 | Layer | Tool |
@@ -68,12 +80,6 @@ You can use the same GitHub repo for both:
 
 - **GitHub Pages** serves `index.html`
 - **Vercel** serves the secure API proxy in `api/gemini.js`
-
-## Important security note
-
-Sell Smart no longer stores or uses a Gemini API key in the browser.
-
-The app uses a **server-side proxy** hosted on Vercel so the API key stays hidden and secure.
 
 ## How the AI flow works
 
