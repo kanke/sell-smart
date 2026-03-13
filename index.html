@@ -7,167 +7,161 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
   --bg: #141414; --bg2: #1c1c1c; --surface: #1e1e1e; --surface2: #252525;
   --surface3: #2e2a3a; --border: #2e2e2e; --border2: #3a3a3a;
   --text: #fff; --text2: #a0a0a0; --text3: #555;
+  --pink: #e84dbd; --purple: #7c3aed;
   --pu-bg: #201830; --pu-border: #4a3570;
   --radius: 16px; --radius-sm: 10px;
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
-html{font-size:16px}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 
-/* HEADER */
-.header{background:var(--bg);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#e84dbd);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;font-weight:800}
-.logo-text{font-size:1rem;font-weight:700;color:var(--text)}
-.hcontrols{display:flex;align-items:center;gap:8px}
-.hsel{position:relative}
-.hsel select{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:6px 26px 6px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;outline:none;-webkit-appearance:none;appearance:none}
-.hsel::after{content:'▾';position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:.68rem;color:var(--text2);pointer-events:none}
-.hicon{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--text2)}
+html { font-size: 16px; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-/* MAIN */
-.main{max-width:680px;margin:0 auto;padding:64px 24px 100px}
+/* ── HEADER ── */
+.header { background: var(--bg); border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #e84dbd); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; font-weight: 800; }
+.logo-text { font-size: 1rem; font-weight: 700; color: var(--text); }
+.header-controls { display: flex; align-items: center; gap: 8px; }
+.hsel { position: relative; }
+.hsel select { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 6px 26px 6px 10px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; outline: none; -webkit-appearance: none; appearance: none; }
+.hsel::after { content: '▾'; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: 0.68rem; color: var(--text2); pointer-events: none; }
+.hicon { width: 34px; height: 34px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; color: var(--text2); user-select: none; }
 
-/* HERO */
-.hero{text-align:center;margin-bottom:48px}
-.hero-icon-outer{position:relative;display:inline-block;margin-bottom:24px}
-.hero-icon{width:80px;height:80px;background:linear-gradient(145deg,#2d1f50 0%,#4a2080 60%,#2d1f50 100%);border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 48px rgba(124,58,237,.35),inset 0 1px 0 rgba(255,255,255,.1);margin:0 auto}
-.sparkle{position:absolute;font-size:1.1rem;animation:hf 3s ease-in-out infinite}
-.sparkle.s1{top:-10px;left:-8px;animation-delay:0s}
-.sparkle.s2{bottom:-6px;right:-10px;animation-delay:1.5s}
-@keyframes hf{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.hero h1{font-size:2.4rem;font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-bottom:14px}
-.hero p{font-size:.95rem;color:var(--text2);line-height:1.65;max-width:400px;margin:0 auto}
+/* ── MAIN ── */
+.main { max-width: 680px; margin: 0 auto; padding: 64px 24px 100px; }
 
-/* UPLOAD */
-.upload-zone{background:var(--pu-bg);border:2px dashed var(--pu-border);border-radius:var(--radius);padding:44px 32px;text-align:center;cursor:pointer;transition:all .25s;margin-bottom:24px}
-.upload-zone:hover,.upload-zone.drag{background:#2d2048;border-color:#8b5cf6}
-.upload-icon{width:54px;height:54px;background:linear-gradient(135deg,#e84dbd,#f472b6);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 20px rgba(232,77,189,.4)}
-.upload-zone h3{font-size:1rem;font-weight:600;margin-bottom:6px}
-.upload-zone p{font-size:.83rem;color:var(--text2);margin-bottom:14px}
-.upload-hint{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:4px 12px;font-size:.75rem;color:var(--text2)}
-#fileInput{display:none}
+/* ── HERO ── */
+.hero { text-align: center; margin-bottom: 48px; }
+.hero-icon-outer { position: relative; display: inline-block; margin-bottom: 24px; }
+.hero-icon { width: 80px; height: 80px; background: linear-gradient(145deg, #2d1f50 0%, #4a2080 60%, #2d1f50 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 48px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1); margin: 0 auto; }
+.hero-sparkle { position: absolute; font-size: 1.1rem; animation: heroFloat 3s ease-in-out infinite; }
+.hero-sparkle.s1 { top: -10px; left: -8px; animation-delay: 0s; }
+.hero-sparkle.s2 { bottom: -6px; right: -10px; animation-delay: 1.5s; }
+@keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+.hero h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; margin-bottom: 14px; }
+.hero p { font-size: 0.95rem; color: var(--text2); line-height: 1.65; max-width: 400px; margin: 0 auto; }
 
-/* PHOTOS */
-.photos-section{margin-bottom:20px}
-.photos-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.photos-lbl{font-size:.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em}
-.clear-btn{background:none;border:none;color:var(--text3);font-size:.78rem;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif}
-.clear-btn:hover{color:var(--text2)}
-.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
-.photo-thumb{aspect-ratio:1;border-radius:10px;overflow:hidden;position:relative;border:1px solid var(--border)}
-.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.photo-thumb .rm{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,.75);border:none;border-radius:50%;color:#fff;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
-.photo-thumb:hover .rm{opacity:1}
+/* ── UPLOAD ZONE ── */
+/* KEY FIX: no invisible input overlay — use a hidden input triggered by JS */
+#fileInput { display: none; }
 
-/* GENERATE */
-.gen-btn{width:100%;background:linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#e84dbd 100%);color:#fff;border:none;border-radius:var(--radius-sm);padding:15px 24px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:48px;box-shadow:0 4px 20px rgba(124,58,237,.4)}
-.gen-btn:hover:not(:disabled){box-shadow:0 6px 28px rgba(124,58,237,.55);transform:translateY(-1px)}
-.gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.upload-zone {
+  background: var(--pu-bg);
+  border: 2px dashed var(--pu-border);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-bottom: 24px;
+  user-select: none;
+}
+.upload-zone:hover, .upload-zone.drag-over { background: #2d2048; border-color: #8b5cf6; }
+.upload-zone.drag-over { border-style: solid; }
 
-/* ERROR */
-.err-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:24px;font-size:.85rem;color:#f87171;display:flex;gap:10px;line-height:1.5;align-items:flex-start}
+.upload-icon { width: 54px; height: 54px; background: linear-gradient(135deg, #e84dbd, #f472b6); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 4px 20px rgba(232,77,189,0.4); }
+.upload-zone h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; pointer-events: none; }
+.upload-zone p { font-size: 0.83rem; color: var(--text2); margin-bottom: 14px; pointer-events: none; }
+.upload-hint { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; padding: 4px 12px; font-size: 0.75rem; color: var(--text2); pointer-events: none; }
 
-/* LOADING */
-.load-state{text-align:center;padding:60px 24px}
-.spinner{width:44px;height:44px;border:3px solid var(--border2);border-top-color:#e84dbd;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 20px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.load-state h3{font-size:1rem;font-weight:600;margin-bottom:8px}
-.load-state p{font-size:.85rem;color:var(--text2);margin-bottom:16px}
-.prog-track{width:180px;height:3px;background:var(--border2);border-radius:100px;overflow:hidden;margin:0 auto}
-.prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#e84dbd);border-radius:100px;width:0%;transition:width .4s ease}
+/* ── PHOTOS ── */
+.photos-section { margin-bottom: 20px; }
+.photos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.photos-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; }
+.clear-btn { background: none; border: none; color: var(--text3); font-size: 0.78rem; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+.clear-btn:hover { color: var(--text2); }
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+.photo-thumb { aspect-ratio: 1; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: transform 0.15s; }
+.photo-thumb:hover { transform: scale(1.03); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-thumb .rm { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background: rgba(0,0,0,0.75); border: none; border-radius: 50%; color: #fff; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
+.photo-thumb:hover .rm { opacity: 1; }
 
-/* EMPTY */
-.empty-state{text-align:center;padding:48px 24px}
-.empty-state h3{font-size:1rem;font-weight:600;color:var(--text2);margin-bottom:8px}
-.empty-state p{font-size:.85rem;color:var(--text3);line-height:1.6;max-width:340px;margin:0 auto}
+/* ── GENERATE ── */
+.gen-btn { width: 100%; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #e84dbd 100%); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 24px; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 48px; box-shadow: 0 4px 20px rgba(124,58,237,0.4); letter-spacing: -0.01em; }
+.gen-btn:hover:not(:disabled) { box-shadow: 0 6px 28px rgba(124,58,237,0.55); transform: translateY(-1px); }
+.gen-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
-/* RESULTS */
-.results-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.results-heading{font-size:1.05rem;font-weight:700}
-.results-count{background:linear-gradient(135deg,#7c3aed,#e84dbd);color:#fff;font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:100px}
+/* ── ERROR ── */
+.error-box { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 24px; font-size: 0.85rem; color: #f87171; display: flex; gap: 10px; line-height: 1.5; }
 
-/* CARD */
-.listing-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;animation:fadeUp .4s ease both;box-shadow:var(--shadow)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.card-imgs{display:flex;gap:8px;padding:12px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
-.card-imgs img{height:100px;width:100px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--border)}
-.card-body{padding:20px 22px 0}
-.card-group-info{font-size:.72rem;color:var(--text3);margin-bottom:12px}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
-.card-num{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:4px}
-.card-title{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.02em;line-height:1.3}
-.card-prices{text-align:right;flex-shrink:0}
-.card-price{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#e84dbd,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.03em;line-height:1}
-.card-rrp{font-size:.75rem;color:var(--text3);text-decoration:line-through;margin-top:2px}
-.card-rrp-lbl{font-size:.7rem;color:var(--text3)}
-.card-desc{font-size:.875rem;color:var(--text2);line-height:1.7;margin-bottom:14px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.tag{background:var(--surface3);border:1px solid var(--border2);border-radius:100px;padding:4px 11px;font-size:.72rem;color:var(--text2);font-weight:500}
-.card-footer{padding:14px 22px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-radius:0 0 var(--radius) var(--radius)}
-.badges{display:flex;gap:6px;flex-wrap:wrap}
-.badge{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:5px}
-.bdot{width:6px;height:6px;border-radius:50%}
-.cond-new{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)}
-.cond-likenew{background:rgba(34,197,94,.08);color:#86efac;border-color:rgba(34,197,94,.2)}
-.cond-good{background:rgba(59,130,246,.1);color:#93c5fd;border-color:rgba(59,130,246,.25)}
-.cond-fair{background:rgba(234,179,8,.1);color:#fde047;border-color:rgba(234,179,8,.25)}
-.cond-poor{background:rgba(239,68,68,.1);color:#fca5a5;border-color:rgba(239,68,68,.25)}
-.copy-btns{display:flex;gap:6px}
-.copy-btn{background:var(--bg2);border:1px solid var(--border2);border-radius:7px;padding:7px 14px;font-size:.78rem;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
-.copy-btn:hover{border-color:#7c3aed;color:var(--text)}
-.copy-btn.done{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#4ade80}
+/* ── LOADING ── */
+.loading-state { text-align: center; padding: 60px 24px; }
+.spinner { width: 44px; height: 44px; border: 3px solid var(--border2); border-top-color: #e84dbd; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+.loading-state p { font-size: 0.85rem; color: var(--text2); margin-bottom: 16px; }
+.prog-track { width: 180px; height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; margin: 0 auto; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #e84dbd); border-radius: 100px; width: 0%; transition: width 0.4s ease; }
 
-/* KEY MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-.modal{background:#1e1e1e;border:1px solid #3a3a3a;border-radius:var(--radius);padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.modal h2{font-size:1.1rem;font-weight:700;margin-bottom:6px}
-.modal p{font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:20px}
-.modal label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:8px}
-.modal input{width:100%;background:#252525;border:1.5px solid #3a3a3a;border-radius:8px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;margin-bottom:16px}
-.modal input:focus{border-color:#7c3aed}
-.modal-btns{display:flex;gap:10px;justify-content:flex-end}
-.modal-hint{font-size:.75rem;color:var(--text3);margin-bottom:20px}
-.modal-hint a{color:#a855f7;text-decoration:none}
-.modal-hint a:hover{text-decoration:underline}
-.btn-primary{background:linear-gradient(135deg,#7c3aed,#e84dbd);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:8px;padding:10px 18px;font-family:'Inter',sans-serif;font-size:.85rem;cursor:pointer}
-.key-status{font-size:.75rem;margin-top:4px;min-height:18px}
-.key-status.ok{color:#4ade80}
-.key-status.bad{color:#f87171}
+/* ── EMPTY ── */
+.empty-listings { text-align: center; padding: 48px 24px; }
+.empty-listings h3 { font-size: 1rem; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+.empty-listings p { font-size: 0.85rem; color: var(--text3); line-height: 1.6; max-width: 340px; margin: 0 auto; }
 
-@media(max-width:600px){.header{padding:0 16px}.main{padding:40px 16px 80px}.hero h1{font-size:1.9rem}.card-imgs img{height:80px;width:80px}}
+/* ── RESULTS ── */
+.results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.results-heading { font-size: 1.05rem; font-weight: 700; }
+.results-count { background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
+
+/* ── LISTING CARD ── */
+.listing-card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.4s ease both; box-shadow: var(--shadow); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.card-imgs { display: flex; gap: 8px; padding: 12px; background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; }
+.card-imgs img { height: 100px; width: 100px; object-fit: cover; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--border); }
+.card-body { padding: 20px 22px 0; }
+.card-group-info { font-size: 0.72rem; color: var(--text3); margin-bottom: 12px; }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.card-num { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 4px; }
+.card-title { font-size: 1.05rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.3; }
+.card-prices { text-align: right; flex-shrink: 0; }
+.card-price { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #e84dbd, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.03em; line-height: 1; }
+.card-rrp { font-size: 0.75rem; color: var(--text3); text-decoration: line-through; margin-top: 2px; }
+.card-rrp-lbl { font-size: 0.7rem; color: var(--text3); }
+.card-desc { font-size: 0.875rem; color: var(--text2); line-height: 1.7; margin-bottom: 14px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.tag { background: var(--surface3); border: 1px solid var(--border2); border-radius: 100px; padding: 4px 11px; font-size: 0.72rem; color: var(--text2); font-weight: 500; }
+.card-footer { padding: 14px 22px; border-top: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { background: var(--bg2); border: 1px solid var(--border2); border-radius: 6px; padding: 4px 10px; font-size: 0.72rem; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+.bdot { width: 6px; height: 6px; border-radius: 50%; }
+.bdot-Vinted { background: #09b1ba; }
+.bdot-eBay { background: #e53238; }
+.bdot-Depop { background: #ff4040; }
+.bdot-Facebook { background: #1877f2; }
+.cond-new     { background:rgba(34,197,94,.1);  color:#4ade80; border-color:rgba(34,197,94,.25); }
+.cond-likenew { background:rgba(34,197,94,.08); color:#86efac; border-color:rgba(34,197,94,.2); }
+.cond-good    { background:rgba(59,130,246,.1); color:#93c5fd; border-color:rgba(59,130,246,.25); }
+.cond-fair    { background:rgba(234,179,8,.1);  color:#fde047; border-color:rgba(234,179,8,.25); }
+.cond-poor    { background:rgba(239,68,68,.1);  color:#fca5a5; border-color:rgba(239,68,68,.25); }
+.copy-btns { display: flex; gap: 6px; }
+.copy-btn { background: var(--bg2); border: 1px solid var(--border2); border-radius: 7px; padding: 7px 14px; font-size: 0.78rem; font-weight: 600; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.copy-btn:hover { border-color: #7c3aed; color: var(--text); }
+.copy-btn.done { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.3); color: #4ade80; }
+
+@media (max-width: 600px) {
+  .header { padding: 0 16px; }
+  .main { padding: 40px 16px 80px; }
+  .hero h1 { font-size: 1.9rem; }
+}
 </style>
 </head>
 <body>
 
-<!-- KEY MODAL -->
-<div id="keyModal" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <h2>Enter your Gemini API Key</h2>
-    <p>A free Gemini API key is required to generate listings. Your key stays in your browser only.</p>
-    <div class="modal-hint">Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com ↗</a></div>
-    <label>API Key</label>
-    <input type="password" id="modalKeyInput" placeholder="AIzaSy..." />
-    <div class="key-status" id="keyStatus"></div>
-    <div class="modal-btns" style="margin-top:16px">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="saveModalKey()">Save &amp; Continue</button>
-    </div>
-  </div>
-</div>
+<!-- Hidden file input — triggered via JS, never overlaid -->
+<input type="file" id="fileInput" accept="image/*" multiple>
 
-<!-- HEADER -->
 <header class="header">
   <a class="logo" href="#">
     <div class="logo-icon">✦</div>
     <span class="logo-text">Sell Smart</span>
   </a>
-  <div class="hcontrols">
+  <div class="header-controls">
     <div class="hsel">
       <select id="platformSel" onchange="platform=this.value">
         <option value="Vinted">🏷 Vinted</option>
@@ -183,55 +177,57 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
         <option value="USD">$ USD</option>
       </select>
     </div>
-    <div class="hicon" title="API Key" onclick="openModal()" id="keyIcon" style="font-size:.7rem;font-weight:700;gap:2px;flex-direction:column">
-      <span id="keyDot" style="width:7px;height:7px;border-radius:50%;background:#555;margin-bottom:1px"></span>
-      <span style="font-size:.55rem;letter-spacing:.03em">KEY</span>
-    </div>
+    <div class="hicon">ⓘ</div>
   </div>
 </header>
 
-<!-- MAIN -->
 <main class="main">
 
   <div class="hero">
     <div class="hero-icon-outer">
       <div class="hero-icon">
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z" stroke="url(#g1)" stroke-width="2" stroke-linejoin="round" fill="url(#g2)" opacity=".9"/>
+          <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z"
+            stroke="url(#sg)" stroke-width="2" stroke-linejoin="round" fill="url(#sgf)" opacity="0.9"/>
           <defs>
-            <linearGradient id="g1" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#e84dbd"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
-            <linearGradient id="g2" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#e84dbd" stop-opacity=".4"/><stop offset="1" stop-color="#a855f7" stop-opacity=".2"/></linearGradient>
+            <linearGradient id="sg" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#e84dbd"/><stop offset="1" stop-color="#a855f7"/>
+            </linearGradient>
+            <linearGradient id="sgf" x1="7" y1="4" x2="33" y2="36" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#e84dbd" stop-opacity="0.4"/><stop offset="1" stop-color="#a855f7" stop-opacity="0.2"/>
+            </linearGradient>
           </defs>
         </svg>
       </div>
-      <span class="sparkle s1">⭐</span>
-      <span class="sparkle s2">⚡</span>
+      <span class="hero-sparkle s1">⭐</span>
+      <span class="hero-sparkle s2">⚡</span>
     </div>
     <h1>List faster. Sell smarter.</h1>
     <p>Transform product photos into professional listings in seconds with AI-powered analysis</p>
   </div>
 
-  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-    <input type="file" id="fileInput" accept="image/*" multiple />
+  <!-- UPLOAD ZONE — click triggers hidden input via JS -->
+  <div class="upload-zone" id="uploadZone">
     <div class="upload-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 4v12M8 8l4-4 4 4M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 4v12M8 8l4-4 4 4M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
     <h3>Drop images here or click to browse</h3>
     <p>Upload photos of items you want to sell. PNG, JPG, or WEBP</p>
-    <div class="upload-hint">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 5.5v3M6 4h.01" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      All images auto-compressed to 1MB each
-    </div>
+    <div class="upload-hint">ⓘ All images auto-compressed to 1MB each</div>
   </div>
 
+  <!-- PHOTO PREVIEWS -->
   <div id="photosSection" style="display:none" class="photos-section">
-    <div class="photos-hdr">
-      <span class="photos-lbl" id="photosLbl">0 photos</span>
+    <div class="photos-header">
+      <span class="photos-label" id="photosLabel">0 photos</span>
       <button class="clear-btn" onclick="clearAll()">Clear all</button>
     </div>
     <div class="photo-grid" id="photoGrid"></div>
   </div>
 
+  <!-- GENERATE -->
   <div id="genWrap" style="display:none">
     <button class="gen-btn" id="genBtn" onclick="generate()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M8 1l1.2 5.2L15 5l-4 3 4 3-5.8-1.2L8 15l-1.2-5.2L1 11l4-3-4-3 5.8 1.2L8 1z"/></svg>
@@ -239,24 +235,30 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     </button>
   </div>
 
-  <div id="errBox" class="err-box" style="display:none"><span>⚠️</span><span id="errText"></span></div>
+  <!-- ERROR -->
+  <div id="errBox" class="error-box" style="display:none">
+    <span>⚠️</span><span id="errText"></span>
+  </div>
 
-  <div id="loadWrap" class="load-state" style="display:none">
+  <!-- LOADING -->
+  <div id="loadWrap" class="loading-state" style="display:none">
     <div class="spinner"></div>
     <h3 id="loadTitle">Analysing photos</h3>
     <p id="loadSub">Please wait…</p>
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
   </div>
 
+  <!-- RESULTS -->
   <div id="resultsWrap" style="display:none">
-    <div class="results-hdr">
+    <div class="results-header">
       <span class="results-heading">Generated Listings</span>
       <span class="results-count" id="resCount">0</span>
     </div>
     <div id="listingsCont"></div>
   </div>
 
-  <div id="emptyState" class="empty-state">
+  <!-- EMPTY -->
+  <div id="emptyState" class="empty-listings">
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="margin:0 auto 14px;display:block">
       <path d="M20 4L22.5 14.5L33 12.5L25 20L33 27.5L22.5 25.5L20 36L17.5 25.5L7 27.5L15 20L7 12.5L17.5 14.5L20 4Z" stroke="#444" stroke-width="1.5" stroke-linejoin="round"/>
     </svg>
@@ -267,147 +269,127 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 </main>
 
 <script>
+// ── CONFIG ──
+const GEMINI_KEY = 'AIzaSyCYv1ukfANZKZaPRTbcTaVu1WHxqHrC6Zo';
 const MODEL = 'gemini-1.5-flash';
 let files = [], platform = 'Vinted', currency = 'GBP';
-
 function sym() { return {GBP:'£',EUR:'€',USD:'$'}[currency]||'£'; }
 
-// ── API KEY ──
-function getKey() { return localStorage.getItem('ss_gemini_key') || ''; }
+// ── FILE INPUT — reliable hidden input pattern ──
+const fileInput = document.getElementById('fileInput');
+const uploadZone = document.getElementById('uploadZone');
 
-function setKeyUI(valid) {
-  document.getElementById('keyDot').style.background = valid ? '#22c55e' : '#ef4444';
-}
-
-(function init() {
-  var k = getKey();
-  setKeyUI(k.length > 10);
-  if (!k) {
-    // Show modal on first visit
-    setTimeout(openModal, 300);
-  }
-})();
-
-function openModal() {
-  var k = getKey();
-  if (k) document.getElementById('modalKeyInput').value = k;
-  document.getElementById('keyModal').style.display = 'flex';
-  document.getElementById('keyStatus').textContent = '';
-}
-
-function closeModal() {
-  document.getElementById('keyModal').style.display = 'none';
-}
-
-async function saveModalKey() {
-  var key = document.getElementById('modalKeyInput').value.trim();
-  if (!key) { document.getElementById('keyStatus').className='key-status bad'; document.getElementById('keyStatus').textContent='Please enter a key'; return; }
-  document.getElementById('keyStatus').className='key-status'; document.getElementById('keyStatus').textContent='Testing key…';
-  try {
-    // Quick test call
-    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+key, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({contents:[{role:'user',parts:[{text:'Say OK'}]}], generationConfig:{maxOutputTokens:5}})
-    });
-    if (!res.ok) { var e=await res.json().catch(function(){return{};}); throw new Error(e.error?e.error.message:'Invalid key'); }
-    localStorage.setItem('ss_gemini_key', key);
-    setKeyUI(true);
-    document.getElementById('keyStatus').className='key-status ok'; document.getElementById('keyStatus').textContent='✓ Key valid!';
-    setTimeout(closeModal, 800);
-  } catch(err) {
-    document.getElementById('keyStatus').className='key-status bad'; document.getElementById('keyStatus').textContent='✗ '+err.message;
-  }
-}
-
-// ── UPLOAD ──
-var fileInput = document.getElementById('fileInput');
-var uploadZone = document.getElementById('uploadZone');
-
-fileInput.addEventListener('change', function() {
-  if (this.files && this.files.length) { handleFiles(this.files); this.value=''; }
+// Click on zone → trigger hidden file input
+uploadZone.addEventListener('click', function(e) {
+  fileInput.click();
 });
 
-uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); e.stopPropagation(); uploadZone.classList.add('drag'); });
-uploadZone.addEventListener('dragleave', function(e) { e.preventDefault(); uploadZone.classList.remove('drag'); });
+// File selected via dialog
+fileInput.addEventListener('change', function() {
+  if (this.files && this.files.length > 0) {
+    handleFiles(this.files);
+    // Reset so same files can be re-selected
+    this.value = '';
+  }
+});
+
+// Drag and drop
+uploadZone.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  uploadZone.classList.add('drag-over');
+});
+uploadZone.addEventListener('dragleave', function(e) {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+});
 uploadZone.addEventListener('drop', function(e) {
-  e.preventDefault(); e.stopPropagation(); uploadZone.classList.remove('drag');
-  if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+  e.preventDefault();
+  e.stopPropagation();
+  uploadZone.classList.remove('drag-over');
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    handleFiles(e.dataTransfer.files);
+  }
 });
 
 function handleFiles(incoming) {
-  Array.from(incoming).forEach(function(f) {
-    if (f.type.startsWith('image/') && !files.find(function(x){return x.name===f.name&&x.size===f.size;}))
+  for (const f of Array.from(incoming)) {
+    if (f.type.startsWith('image/') && !files.find(x => x.name===f.name && x.size===f.size)) {
       files.push(f);
-  });
+    }
+  }
   renderThumbs();
 }
 
 function removeFile(i) { files.splice(i,1); renderThumbs(); }
 
 function clearAll() {
-  files=[]; renderThumbs();
-  document.getElementById('resultsWrap').style.display='none';
-  document.getElementById('emptyState').style.display='block';
-  document.getElementById('errBox').style.display='none';
+  files = [];
+  renderThumbs();
+  document.getElementById('resultsWrap').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+  document.getElementById('errBox').style.display = 'none';
 }
 
 function renderThumbs() {
-  var sec=document.getElementById('photosSection'), wrap=document.getElementById('genWrap'),
-      grid=document.getElementById('photoGrid'), lbl=document.getElementById('photosLbl');
+  const sec = document.getElementById('photosSection');
+  const wrap = document.getElementById('genWrap');
+  const grid = document.getElementById('photoGrid');
+  const lbl = document.getElementById('photosLabel');
   if (!files.length) { sec.style.display='none'; wrap.style.display='none'; return; }
   sec.style.display='block'; wrap.style.display='block';
-  lbl.textContent=files.length+' photo'+(files.length!==1?'s':'')+' selected';
-  grid.innerHTML='';
-  files.forEach(function(f,i) {
-    var url=URL.createObjectURL(f), d=document.createElement('div');
-    d.className='photo-thumb';
-    d.innerHTML='<img src="'+url+'" alt="photo"><button class="rm" onclick="removeFile('+i+')">✕</button>';
+  lbl.textContent = files.length + ' photo' + (files.length!==1?'s':'') + ' selected';
+  grid.innerHTML = '';
+  files.forEach(function(f, i) {
+    const url = URL.createObjectURL(f);
+    const d = document.createElement('div');
+    d.className = 'photo-thumb';
+    d.innerHTML = '<img src="'+url+'" alt="photo"><button class="rm" onclick="removeFile('+i+')">✕</button>';
     grid.appendChild(d);
   });
 }
 
 // ── COMPRESS ──
-function compress(file) {
+function compress(file, maxKB) {
+  maxKB = maxKB || 900;
   return new Promise(function(resolve) {
-    var reader=new FileReader();
-    reader.onload=function(e) {
-      var img=new Image();
-      img.onload=function() {
-        var c=document.createElement('canvas'), w=img.width, h=img.height, max=1200;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var w = img.width, h = img.height, max = 1200;
         if (w>max||h>max) { var s=max/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
-        c.width=w; c.height=h;
-        c.getContext('2d').drawImage(img,0,0,w,h);
-        var q=0.82;
-        (function go(){
-          var d=c.toDataURL('image/jpeg',q);
-          if ((d.length*3/4)/1024>900 && q>0.2) { q-=0.1; go(); }
-          else resolve(d.split(',')[1]);
-        })();
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        var q=0.85;
+        function go() {
+          var dataUrl = canvas.toDataURL('image/jpeg', q);
+          var sizeKB = (dataUrl.length * 3/4) / 1024;
+          if (sizeKB > maxKB && q > 0.2) { q -= 0.1; go(); }
+          else resolve(dataUrl.split(',')[1]);
+        }
+        go();
       };
-      img.src=e.target.result;
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   });
 }
 
-// ── GEMINI ──
-async function gemini(contents) {
-  var key = getKey();
-  if (!key) throw new Error('No API key — click the KEY button in the header to add one.');
-  var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+key, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:contents, generationConfig:{temperature:0.35, maxOutputTokens:2048}})
+// ── GEMINI API ──
+async function callGemini(contents) {
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+GEMINI_KEY;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: contents, generationConfig: { temperature: 0.35, maxOutputTokens: 2048 } })
   });
   if (!res.ok) {
-    var err=await res.json().catch(function(){return{};});
-    var msg = err.error ? err.error.message : 'HTTP '+res.status;
-    if (res.status===400) throw new Error('API key invalid or request malformed: '+msg);
-    if (res.status===429) throw new Error('Rate limit hit — wait a moment and try again.');
-    if (res.status===403) throw new Error('API key does not have permission. Check your key at aistudio.google.com');
-    throw new Error('Gemini API error: '+msg);
+    const err = await res.json().catch(function(){return {};});
+    throw new Error(err.error ? err.error.message : 'API error ' + res.status);
   }
-  var data=await res.json();
-  if (!data.candidates || !data.candidates[0]) throw new Error('No response from Gemini. Try again.');
+  const data = await res.json();
   return data.candidates[0].content.parts[0].text || '';
 }
 
@@ -418,29 +400,37 @@ function parseJ(raw) {
 
 // ── ANALYSE IMAGE ──
 async function analyseImg(file) {
-  var data = await compress(file);
-  var raw = await gemini([{role:'user', parts:[
-    {inlineData:{mimeType:'image/jpeg', data:data}},
-    {text:'Analyse this product image. Return ONLY valid JSON, no markdown, no explanation:\n{"brand":"brand name or Unknown","model":"model/style name or Unknown","productType":"specific category e.g. trainers, leather jacket, jeans, laptop, earrings, handbag","color":"primary colour","condition":"New|Like New|Good|Fair|Poor","gender":"Men|Women|Unisex|N/A","size":"visible size or null","productSignature":"brand+model+type+colour combined"}'}
-  ]}]);
-  return parseJ(raw) || {brand:'Unknown',model:'Unknown',productType:'Item',color:'Unknown',condition:'Good',gender:'Unisex',size:null,productSignature:file.name};
+  const data = await compress(file);
+  const raw = await callGemini([{
+    role: 'user',
+    parts: [
+      { inlineData: { mimeType: 'image/jpeg', data: data } },
+      { text: 'Analyse this product image. Return ONLY valid JSON with no markdown or explanation:\n{"brand":"brand name or Unknown","model":"model or Unknown","productType":"specific type e.g. trainers, jacket, jeans, phone, handbag","color":"primary colour","condition":"New|Like New|Good|Fair|Poor","gender":"Men|Women|Unisex|N/A","size":"size if visible else null","productSignature":"brand+model+type+colour combined identifier"}' }
+    ]
+  }]);
+  return parseJ(raw) || { brand:'Unknown', model:'Unknown', productType:'Item', color:'Unknown', condition:'Good', gender:'Unisex', size:null, productSignature:file.name };
 }
 
 // ── CLUSTER ──
 function clusterImages(analyses) {
-  var groups=[], used=new Set();
-  analyses.forEach(function(a,i) {
+  var groups = [], used = new Set();
+  analyses.forEach(function(a, i) {
     if (used.has(i)) return;
-    var grp=[i]; used.add(i);
-    var sigA=(a.productSignature||'').toLowerCase(), typeA=(a.productType||'').toLowerCase(), brandA=(a.brand||'').toLowerCase();
-    analyses.forEach(function(b,j) {
-      if (used.has(j)||i===j) return;
-      var sigB=(b.productSignature||'').toLowerCase(), typeB=(b.productType||'').toLowerCase(), brandB=(b.brand||'').toLowerCase();
-      var sameType=typeA&&typeB&&typeA===typeB;
-      var sameBrand=brandA!=='unknown'&&brandA&&brandA===brandB;
-      var words=sigA.split(/\s+/).filter(function(w){return w.length>3;});
-      var overlap=words.filter(function(w){return sigB.includes(w);}).length;
-      if (sameType&&(sameBrand||overlap>=Math.max(2,Math.ceil(words.length*0.45)))) { grp.push(j); used.add(j); }
+    var grp = [i]; used.add(i);
+    var sigA = (a.productSignature||'').toLowerCase();
+    var typeA = (a.productType||'').toLowerCase();
+    var brandA = (a.brand||'').toLowerCase();
+    analyses.forEach(function(b, j) {
+      if (used.has(j) || i===j) return;
+      var sigB = (b.productSignature||'').toLowerCase();
+      var typeB = (b.productType||'').toLowerCase();
+      var brandB = (b.brand||'').toLowerCase();
+      var sameType = typeA && typeB && typeA === typeB;
+      var sameBrand = brandA !== 'unknown' && brandA && brandA === brandB;
+      var words = sigA.split(/\s+/).filter(function(w){return w.length>3;});
+      var overlap = words.filter(function(w){return sigB.includes(w);}).length;
+      var matched = overlap >= Math.max(2, Math.ceil(words.length*0.45));
+      if (sameType && (sameBrand || matched)) { grp.push(j); used.add(j); }
     });
     groups.push(grp);
   });
@@ -448,118 +438,159 @@ function clusterImages(analyses) {
 }
 
 // ── GENERATE LISTING ──
-async function genListing(cFiles, cMetas) {
-  var parts=[];
-  for (var i=0;i<cFiles.length;i++) {
-    var d=await compress(cFiles[i]);
-    parts.push({inlineData:{mimeType:'image/jpeg',data:d}});
+async function genListing(clusterFiles, clusterMetas) {
+  var parts = [];
+  for (var i=0; i<clusterFiles.length; i++) {
+    var d = await compress(clusterFiles[i]);
+    parts.push({ inlineData: { mimeType: 'image/jpeg', data: d } });
   }
-  var guides={Vinted:'Friendly, casual. State brand, size, condition clearly.',eBay:'Detailed, keyword-rich. Include model numbers.',Depop:'Trendy, conversational. Reference style/era. Include measurements.','Facebook Marketplace':'Casual and direct.'};
-  var metaStr=cMetas.map(function(m,i){return 'Image '+(i+1)+': '+JSON.stringify(m);}).join('\n');
-  parts.push({text:'Expert resale listing writer for '+platform+'.\nStyle: '+(guides[platform]||'')+'\nCurrency: '+currency+' ('+sym()+')\n\nPhoto analyses:\n'+metaStr+'\n\nReturn ONLY valid JSON, no markdown:\n{"title":"specific searchable title max 80 chars","description":"4-6 sentences: what it is, condition, key features, sizing if clothing, why to buy. Tone for '+platform+'.","suggestedPrice":NUMBER_ONLY,"rrp":NUMBER_ONLY,"condition":"New|Like New|Good|Fair|Poor","category":"accurate '+platform+' category","tags":["8 to 12 plain word search tags"]}'});
-  var raw=await gemini([{role:'user',parts:parts}]);
-  return parseJ(raw)||{title:'Item for sale',description:raw,suggestedPrice:0,rrp:0,condition:'Good',category:'Other',tags:[]};
+  var guides = {
+    'Vinted': 'Friendly and casual. State brand, size, condition clearly.',
+    'eBay': 'Detailed and keyword-rich. Include model numbers if visible.',
+    'Depop': 'Trendy and conversational. Reference style/era. Include measurements.',
+    'Facebook Marketplace': 'Casual and direct. Keep it simple.'
+  };
+  var metaStr = clusterMetas.map(function(m,i){return 'Image '+(i+1)+': '+JSON.stringify(m);}).join('\n');
+  parts.push({ text: 'Expert resale listing writer for '+platform+'. Style guide: '+(guides[platform]||'')+'\nCurrency: '+currency+' (use '+sym()+' symbol)\n\nPhoto analyses:\n'+metaStr+'\n\nReturn ONLY valid JSON with no markdown:\n{"title":"specific searchable title max 80 chars","description":"4-6 sentences covering what it is, condition, features, sizing if clothing, and why to buy","suggestedPrice":0,"rrp":0,"condition":"New|Like New|Good|Fair|Poor","category":"accurate '+platform+' category","tags":["8 to 12 search tags as plain words"]}' });
+  var raw = await callGemini([{ role: 'user', parts: parts }]);
+  return parseJ(raw) || { title:'Item for sale', description: raw, suggestedPrice:0, rrp:0, condition:'Good', category:'Other', tags:[] };
 }
 
-// ── MAIN ──
+// ── MAIN GENERATE ──
 async function generate() {
   if (!files.length) { showErr('Please upload at least one photo.'); return; }
-  var key=getKey();
-  if (!key) { openModal(); return; }
   hideErr();
-  setLoad(true,'Reading your photos','Analysing '+files.length+' image'+(files.length!==1?'s':'')+'…');
-  document.getElementById('genBtn').disabled=true;
-  document.getElementById('resultsWrap').style.display='none';
-  document.getElementById('emptyState').style.display='none';
+  setLoad(true, 'Reading your photos', 'Analysing ' + files.length + ' image' + (files.length!==1?'s':'') + '…');
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('resultsWrap').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
 
   try {
-    var analyses=[];
-    for (var i=0;i<files.length;i++) {
-      setLoad(true,'Analysing photos','Photo '+(i+1)+' of '+files.length+'…');
+    var analyses = [];
+    for (var i=0; i<files.length; i++) {
+      setLoad(true, 'Analysing photos', 'Photo ' + (i+1) + ' of ' + files.length + '…');
       setProg(Math.round(((i+1)/files.length)*35));
       analyses.push(await analyseImg(files[i]));
     }
-    setLoad(true,'Grouping items','Matching photos of the same product…');
+
+    setLoad(true, 'Grouping items', 'Matching photos of the same product…');
     setProg(45);
-    var groups=clusterImages(analyses);
-    var results=[];
-    for (var g=0;g<groups.length;g++) {
-      setLoad(true,'Writing listings','Listing '+(g+1)+' of '+groups.length+'…');
-      setProg(45+Math.round(((g+1)/groups.length)*52));
-      var idxs=groups[g];
-      var listing=await genListing(idxs.map(function(i){return files[i];}), idxs.map(function(i){return analyses[i];}));
-      results.push({listing:listing,idxs:idxs,metas:idxs.map(function(i){return analyses[i];})});
+    var groups = clusterImages(analyses);
+
+    var results = [];
+    for (var g=0; g<groups.length; g++) {
+      setLoad(true, 'Writing listings', 'Listing ' + (g+1) + ' of ' + groups.length + '…');
+      setProg(45 + Math.round(((g+1)/groups.length)*52));
+      var idxs = groups[g];
+      var listing = await genListing(idxs.map(function(i){return files[i];}), idxs.map(function(i){return analyses[i];}));
+      results.push({ listing: listing, idxs: idxs, metas: idxs.map(function(i){return analyses[i];}) });
     }
+
     setProg(100);
-    setTimeout(function(){setLoad(false);renderResults(results);document.getElementById('genBtn').disabled=false;},300);
+    setTimeout(function() {
+      setLoad(false);
+      renderResults(results);
+      document.getElementById('genBtn').disabled = false;
+    }, 300);
+
   } catch(err) {
     setLoad(false);
-    showErr(err.message||'Something went wrong. Please try again.');
-    document.getElementById('emptyState').style.display='block';
-    document.getElementById('genBtn').disabled=false;
+    showErr(err.message || 'Something went wrong. Please check your connection and try again.');
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('genBtn').disabled = false;
   }
 }
 
 // ── RENDER ──
-function condCls(c){var m={'new':'cond-new','like new':'cond-likenew','good':'cond-good','fair':'cond-fair','poor':'cond-poor'};return m[(c||'').toLowerCase()]||'cond-good';}
-function fmtP(n){var x=parseFloat(n);return isNaN(x)?String(n||'?'):sym()+x.toFixed(2);}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function platColor(p){return{Vinted:'#09b1ba',eBay:'#e53238',Depop:'#ff4040','Facebook Marketplace':'#1877f2'}[p]||'#888';}
+function condCls(c) {
+  var m = {'new':'cond-new','like new':'cond-likenew','good':'cond-good','fair':'cond-fair','poor':'cond-poor'};
+  return m[(c||'').toLowerCase()] || 'cond-good';
+}
+function fmtPrice(n) {
+  var x = parseFloat(n);
+  return isNaN(x) ? String(n||'?') : sym() + x.toFixed(2);
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 function renderResults(results) {
-  var cont=document.getElementById('listingsCont');
-  cont.innerHTML='';
-  document.getElementById('resultsWrap').style.display='block';
-  document.getElementById('resCount').textContent=results.length+' listing'+(results.length!==1?'s':'');
+  var cont = document.getElementById('listingsCont');
+  cont.innerHTML = '';
+  document.getElementById('resultsWrap').style.display = 'block';
+  document.getElementById('resCount').textContent = results.length + ' listing' + (results.length!==1?'s':'');
 
-  results.forEach(function(item,i) {
-    var listing=item.listing, idxs=item.idxs, metas=item.metas;
-    var card=document.createElement('div');
-    card.className='listing-card';
-    card.style.animationDelay=(i*0.09)+'s';
-    var imgs=idxs.map(function(idx){return '<img src="'+URL.createObjectURL(files[idx])+'" alt="Product">';}).join('');
-    var tags=(listing.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('');
-    var sig=metas.map(function(m){return m.productSignature;}).filter(Boolean).join(' · ');
-    var price=fmtP(listing.suggestedPrice), rrp=fmtP(listing.rrp);
-    var full=[listing.title,'',listing.description,'','Condition: '+listing.condition,'Price: '+price+'  (RRP: '+rrp+')',listing.category?'Category: '+listing.category:'','',(listing.tags||[]).map(function(t){return '#'+t;}).join(' ')].join('\n').trim();
-    var pc=platColor(platform);
-    card.innerHTML=
-      '<div class="card-imgs">'+imgs+'</div>'+
-      '<div class="card-body">'+
-        '<div class="card-group-info">📎 '+idxs.length+' photo'+(idxs.length!==1?'s':'')+' grouped · '+esc(sig)+'</div>'+
-        '<div class="card-top">'+
-          '<div><div class="card-num">Listing '+(i+1)+'</div><div class="card-title">'+esc(listing.title)+'</div></div>'+
-          '<div class="card-prices"><div class="card-price">'+esc(price)+'</div><div class="card-rrp">'+esc(rrp)+'</div><div class="card-rrp-lbl">RRP</div></div>'+
-        '</div>'+
-        '<p class="card-desc">'+esc(listing.description)+'</p>'+
-        '<div class="tags">'+tags+'</div>'+
-      '</div>'+
-      '<div class="card-footer">'+
-        '<div class="badges">'+
-          '<div class="badge"><div class="bdot" style="background:'+pc+'"></div>'+esc(platform)+'</div>'+
-          '<div class="badge '+condCls(listing.condition)+'">'+esc(listing.condition)+'</div>'+
-          (listing.category?'<div class="badge">'+esc(listing.category)+'</div>':'')+
-        '</div>'+
-        '<div class="copy-btns">'+
-          '<button class="copy-btn" data-v="'+encodeURIComponent(listing.title)+'" onclick="doCopy(this,\'Copy title\')">Copy title</button>'+
-          '<button class="copy-btn" data-v="'+encodeURIComponent(full)+'" onclick="doCopy(this,\'Copy all\')">Copy all</button>'+
-        '</div>'+
+  results.forEach(function(item, i) {
+    var listing = item.listing, idxs = item.idxs, metas = item.metas;
+    var card = document.createElement('div');
+    card.className = 'listing-card';
+    card.style.animationDelay = (i * 0.09) + 's';
+
+    var imgs = idxs.map(function(idx){ return '<img src="'+URL.createObjectURL(files[idx])+'" alt="Product">'; }).join('');
+    var tags = (listing.tags||[]).map(function(t){ return '<span class="tag">'+esc(t)+'</span>'; }).join('');
+    var sig = metas.map(function(m){return m.productSignature;}).filter(Boolean).join(' · ');
+    var price = fmtPrice(listing.suggestedPrice);
+    var rrp = fmtPrice(listing.rrp);
+    var dotClass = 'bdot-' + platform.split(' ')[0];
+
+    var fullText = [listing.title, '', listing.description, '',
+      'Condition: ' + listing.condition,
+      'Price: ' + price + '  (RRP: ' + rrp + ')',
+      listing.category ? 'Category: ' + listing.category : '',
+      '', (listing.tags||[]).map(function(t){return '#'+t;}).join(' ')
+    ].join('\n').trim();
+
+    card.innerHTML =
+      '<div class="card-imgs">'+imgs+'</div>' +
+      '<div class="card-body">' +
+        '<div class="card-group-info">📎 '+idxs.length+' photo'+(idxs.length!==1?'s':'')+' grouped · '+esc(sig)+'</div>' +
+        '<div class="card-top">' +
+          '<div>' +
+            '<div class="card-num">Listing '+(i+1)+'</div>' +
+            '<div class="card-title">'+esc(listing.title)+'</div>' +
+          '</div>' +
+          '<div class="card-prices">' +
+            '<div class="card-price">'+esc(price)+'</div>' +
+            '<div class="card-rrp">'+esc(rrp)+'</div>' +
+            '<div class="card-rrp-lbl">RRP</div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="card-desc">'+esc(listing.description)+'</p>' +
+        '<div class="tags">'+tags+'</div>' +
+      '</div>' +
+      '<div class="card-footer">' +
+        '<div class="badges">' +
+          '<div class="badge"><div class="bdot '+dotClass+'"></div>'+esc(platform)+'</div>' +
+          '<div class="badge '+condCls(listing.condition)+'">'+esc(listing.condition)+'</div>' +
+          (listing.category ? '<div class="badge">'+esc(listing.category)+'</div>' : '') +
+        '</div>' +
+        '<div class="copy-btns">' +
+          '<button class="copy-btn" data-v="'+encodeURIComponent(listing.title)+'" onclick="doCopy(this,\'Copy title\')">Copy title</button>' +
+          '<button class="copy-btn" data-v="'+encodeURIComponent(fullText)+'" onclick="doCopy(this,\'Copy all\')">Copy all</button>' +
+        '</div>' +
       '</div>';
+
     cont.appendChild(card);
   });
-  document.getElementById('resultsWrap').scrollIntoView({behavior:'smooth',block:'start'});
+
+  document.getElementById('resultsWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function doCopy(btn,lbl){
-  navigator.clipboard.writeText(decodeURIComponent(btn.dataset.v)).then(function(){
-    btn.textContent='✓ Copied!'; btn.classList.add('done');
-    setTimeout(function(){btn.textContent=lbl;btn.classList.remove('done');},2000);
+// ── HELPERS ──
+function doCopy(btn, lbl) {
+  navigator.clipboard.writeText(decodeURIComponent(btn.dataset.v)).then(function() {
+    btn.textContent = '✓ Copied!'; btn.classList.add('done');
+    setTimeout(function(){ btn.textContent = lbl; btn.classList.remove('done'); }, 2000);
   });
 }
-function setLoad(show,title,sub){document.getElementById('loadWrap').style.display=show?'block':'none';if(title)document.getElementById('loadTitle').textContent=title;if(sub)document.getElementById('loadSub').textContent=sub;}
-function setProg(pct){document.getElementById('progFill').style.width=pct+'%';}
-function showErr(msg){document.getElementById('errText').textContent=msg;document.getElementById('errBox').style.display='flex';}
-function hideErr(){document.getElementById('errBox').style.display='none';}
+function setLoad(show, title, sub) {
+  document.getElementById('loadWrap').style.display = show ? 'block' : 'none';
+  if (title) document.getElementById('loadTitle').textContent = title;
+  if (sub) document.getElementById('loadSub').textContent = sub;
+}
+function setProg(pct) { document.getElementById('progFill').style.width = pct + '%'; }
+function showErr(msg) { document.getElementById('errText').textContent = msg; document.getElementById('errBox').style.display = 'flex'; }
+function hideErr() { document.getElementById('errBox').style.display = 'none'; }
 </script>
 </body>
 </html>
