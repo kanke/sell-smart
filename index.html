@@ -176,6 +176,27 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .modal-note ul li { color: var(--text2); padding-left: 14px; position: relative; }
 .modal-note ul li::before { content: '\00b7'; position: absolute; left: 0; color: #a78bfa; font-weight: 700; }
 .modal-powered { font-size: 0.72rem; color: var(--text3); text-align: center; }
+.modal-tabs { display: flex; border-bottom: 1px solid #2e2e2e; padding: 0 22px; }
+.modal-tab { background: none; border: none; color: var(--text3); font-family: 'Inter', sans-serif; font-size: 0.84rem; font-weight: 600; padding: 12px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+.modal-tab:hover { color: var(--text2); }
+.modal-tab.active { color: var(--text); border-bottom-color: #e84dbd; }
+.modal-pane { display: none; }
+.modal-pane.active { display: block; }
+.fb-group { margin-bottom: 16px; }
+.fb-label { font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 7px; display: block; }
+.fb-types { display: flex; gap: 7px; flex-wrap: wrap; }
+.fb-type { background: var(--surface2); border: 1px solid var(--border2); border-radius: 100px; padding: 5px 14px; font-size: 0.78rem; font-weight: 600; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+.fb-type.sel { background: rgba(232,77,189,0.15); border-color: #e84dbd; color: #f0abdc; }
+.fb-input { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.85rem; outline: none; transition: border-color 0.15s; resize: none; }
+.fb-input:focus { border-color: #7c3aed; }
+.fb-input::placeholder { color: var(--text3); }
+.fb-send { width: 100%; background: linear-gradient(135deg, #7c3aed, #e84dbd); color: #fff; border: none; border-radius: 10px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 4px; }
+.fb-send:hover:not(:disabled) { opacity: 0.88; }
+.fb-send:disabled { opacity: 0.4; cursor: not-allowed; }
+.fb-sent { text-align: center; padding: 28px 0 12px; }
+.fb-sent-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.fb-sent h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+.fb-sent p { font-size: 0.84rem; color: var(--text2); line-height: 1.6; }
 @media (max-width: 600px) {
   .header { padding: 0 16px; }
   .main { padding: 32px 16px 80px; }
@@ -212,34 +233,72 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         <option value="USD">$ USD</option>
       </select>
     </div>
-    <button class="hicon-btn" onclick="toggleInfo()" title="How it works">ⓘ</button>
+    <button class="hicon-btn" onclick="toggleInfo('how')" title="How it works">ⓘ</button>
+    <button class="hicon-btn" onclick="toggleInfo('feedback')" title="Send feedback" style="font-size:0.8rem">💬</button>
   </div>
 </header>
 
-<!-- INFO MODAL -->
+<!-- INFO + FEEDBACK MODAL -->
 <div id="infoOverlay" class="modal-overlay" onclick="closeInfoOutside(event)">
   <div class="modal" id="infoModal">
     <div class="modal-header">
-      <div class="modal-title"><div class="modal-logo">✦</div>How Sell Smart works</div>
+      <div class="modal-title"><div class="modal-logo">✦</div>Sell Smart</div>
       <button class="modal-close" onclick="toggleInfo()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-steps">
-        <div class="modal-step"><div class="step-num">1</div><div><strong>Upload photos</strong>Add up to 20 photos of items you want to sell. Mix different products — AI will group matching photos automatically.</div></div>
-        <div class="modal-step"><div class="step-num">2</div><div><strong>Choose your platform</strong>Select Vinted, eBay, Depop, or Facebook Marketplace. The listing tone and style adapts to each platform.</div></div>
-        <div class="modal-step"><div class="step-num">3</div><div><strong>Generate listings</strong>AI analyses each photo, groups matching items, and writes a complete listing — title, description, suggested price, tags, and category.</div></div>
-        <div class="modal-step"><div class="step-num">4</div><div><strong>Copy or download</strong>Copy individual fields or download all listings as a text file ready to paste into your selling platform.</div></div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabHow" onclick="switchTab('how')">ℹ️ How it works</button>
+      <button class="modal-tab" id="tabFeedback" onclick="switchTab('feedback')">💬 Feedback</button>
+    </div>
+    <div class="modal-pane active" id="paneHow">
+      <div class="modal-body">
+        <div class="modal-steps">
+          <div class="modal-step"><div class="step-num">1</div><div><strong>Upload photos</strong>Add up to 20 photos of items you want to sell. Mix different products — AI will group matching photos automatically.</div></div>
+          <div class="modal-step"><div class="step-num">2</div><div><strong>Choose your platform</strong>Select Vinted, eBay, Depop, or Facebook Marketplace. The listing tone and style adapts to each platform.</div></div>
+          <div class="modal-step"><div class="step-num">3</div><div><strong>Generate listings</strong>AI analyses each photo, groups matching items, and writes a complete listing — title, description, suggested price, tags, and category.</div></div>
+          <div class="modal-step"><div class="step-num">4</div><div><strong>Copy or download</strong>Copy individual fields or download all listings as a text file ready to paste into your selling platform.</div></div>
+        </div>
+        <div class="modal-note">
+          <strong>💡 Tips for best results</strong>
+          <ul>
+            <li>Use clear, well-lit photos against a plain background</li>
+            <li>Include photos of labels, tags, or size info where visible</li>
+            <li>Multiple angles of the same item are detected and merged</li>
+            <li>Images are compressed automatically — originals never leave your device</li>
+          </ul>
+        </div>
+        <div class="modal-powered">Powered by Google Gemini 2.5 Flash · Built at GDG London IWD 2026</div>
       </div>
-      <div class="modal-note">
-        <strong>💡 Tips for best results</strong>
-        <ul>
-          <li>Use clear, well-lit photos against a plain background</li>
-          <li>Include photos of labels, tags, or size info where visible</li>
-          <li>Multiple angles of the same item are detected and merged</li>
-          <li>Images are compressed automatically — originals never leave your device</li>
-        </ul>
+    </div>
+    <div class="modal-pane" id="paneFeedback">
+      <div class="modal-body">
+        <div id="fbForm">
+          <div class="fb-group">
+            <span class="fb-label">What's this about?</span>
+            <div class="fb-types">
+              <button class="fb-type sel" onclick="selectFbType(this)">🐛 Bug report</button>
+              <button class="fb-type" onclick="selectFbType(this)">✨ Feature request</button>
+              <button class="fb-type" onclick="selectFbType(this)">💡 Suggestion</button>
+              <button class="fb-type" onclick="selectFbType(this)">👏 Compliment</button>
+              <button class="fb-type" onclick="selectFbType(this)">🤔 Other</button>
+            </div>
+          </div>
+          <div class="fb-group" style="margin-top:14px">
+            <label class="fb-label" for="fbName">Your name <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+            <input id="fbName" class="fb-input" type="text" placeholder="e.g. Sarah" autocomplete="off">
+          </div>
+          <div class="fb-group">
+            <label class="fb-label" for="fbMsg">Message <span style="color:#f87171">*</span></label>
+            <textarea id="fbMsg" class="fb-input" rows="4" placeholder="Tell us what you think, what's broken, or what you'd love to see next…"></textarea>
+          </div>
+          <button class="fb-send" id="fbSendBtn" onclick="sendFeedback()">Send feedback →</button>
+        </div>
+        <div id="fbSent" class="fb-sent" style="display:none">
+          <div class="fb-sent-icon">🎉</div>
+          <h3>Thanks for your feedback!</h3>
+          <p>Your message has been sent to the Sell Smart team. We read every submission and really appreciate you taking the time.</p>
+          <button class="fb-send" style="margin-top:16px;max-width:200px;margin-left:auto;margin-right:auto;display:block" onclick="resetFeedback()">Send another</button>
+        </div>
       </div>
-      <div class="modal-powered">Powered by Google Gemini 2.0 Flash · Built at GDG London IWD 2026</div>
     </div>
   </div>
 </div>
@@ -357,8 +416,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 <div class="toast" id="toast"></div>
 
 <script>
-const GEMINI_KEY = 'AIzaSyCYv1ukfANZKZaPRTbcTaVu1WHxqHrC6Zo';
-const MODEL = 'gemini-2.0-flash';
+const GEMINI_KEY = 'AIzaSyBFK6xIC-tL-MmehX3B8vGYNs-ngneptTY';
+const MODEL = 'gemini-2.5-flash';
 const MAX_PHOTOS = 20;
 const MAX_FILE_MB = 25;
 let files = [], platform = 'Vinted', currency = 'GBP', lastResults = [];
@@ -742,10 +801,11 @@ function showToast(msg){
 }
 
 // ── INFO MODAL ──
-function toggleInfo(){
+function toggleInfo(tab){
   var o=document.getElementById('infoOverlay');
   o.classList.toggle('open');
   document.body.style.overflow=o.classList.contains('open')?'hidden':'';
+  if(tab&&o.classList.contains('open')) switchTab(tab);
 }
 function closeInfoOutside(e){
   if(e.target===document.getElementById('infoOverlay')) toggleInfo();
@@ -753,6 +813,59 @@ function closeInfoOutside(e){
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&document.getElementById('infoOverlay').classList.contains('open')) toggleInfo();
 });
+
+// ── MODAL TABS ──
+function switchTab(tab){
+  var panes={how:'paneHow',feedback:'paneFeedback'};
+  var tabs={how:'tabHow',feedback:'tabFeedback'};
+  Object.keys(panes).forEach(function(k){
+    document.getElementById(panes[k]).classList.toggle('active',k===tab);
+    document.getElementById(tabs[k]).classList.toggle('active',k===tab);
+  });
+}
+
+// ── FEEDBACK ──
+var fbSelectedType='Bug report';
+function selectFbType(btn){
+  document.querySelectorAll('.fb-type').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  fbSelectedType=btn.textContent.replace(/^[^a-zA-Z]+/,'').trim();
+}
+function sendFeedback(){
+  var msg=document.getElementById('fbMsg').value.trim();
+  var name=document.getElementById('fbName').value.trim();
+  if(!msg){document.getElementById('fbMsg').focus();document.getElementById('fbMsg').style.borderColor='#f87171';return;}
+  document.getElementById('fbMsg').style.borderColor='';
+  var btn=document.getElementById('fbSendBtn');
+  btn.disabled=true;btn.textContent='Sending…';
+  var subject=encodeURIComponent('Sell Smart Feedback: '+fbSelectedType);
+  var body=encodeURIComponent(
+    'Type: '+fbSelectedType+'
+'+
+    (name?'From: '+name+'
+':'')+
+    '
+Message:
+'+msg+'
+
+---
+Sent from Sell Smart app'
+  );
+  window.location.href='mailto:kanke.ishaku@live.com?subject='+subject+'&body='+body;
+  setTimeout(function(){
+    document.getElementById('fbForm').style.display='none';
+    document.getElementById('fbSent').style.display='block';
+    btn.disabled=false;btn.textContent='Send feedback →';
+  },800);
+}
+function resetFeedback(){
+  document.getElementById('fbForm').style.display='block';
+  document.getElementById('fbSent').style.display='none';
+  document.getElementById('fbMsg').value='';
+  document.getElementById('fbName').value='';
+  document.querySelectorAll('.fb-type').forEach(function(b,i){b.classList.toggle('sel',i===0);});
+  fbSelectedType='Bug report';
+}
 </script>
 </body>
 </html>
