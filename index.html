@@ -252,7 +252,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     <div class="modal-pane active" id="paneHow">
       <div class="modal-body">
         <div class="modal-steps">
-          <div class="modal-step"><div class="step-num">1</div><div><strong>Upload photos</strong>Add up to 20 photos of items you want to sell. Mix different products — AI will group matching photos automatically.</div></div>
+          <div class="modal-step"><div class="step-num">1</div><div><strong>Upload photos</strong>Add up to 12 photos of items you want to sell. Mix different products — AI will group matching photos automatically.</div></div>
           <div class="modal-step"><div class="step-num">2</div><div><strong>Choose your platform</strong>Select Vinted, eBay, Depop, or Facebook Marketplace. The listing tone and style adapts to each platform.</div></div>
           <div class="modal-step"><div class="step-num">3</div><div><strong>Generate listings</strong>AI analyses each photo, groups matching items, and writes a complete listing — title, description, suggested price, tags, and category.</div></div>
           <div class="modal-step"><div class="step-num">4</div><div><strong>Copy or download</strong>Copy individual fields or download all listings as a text file ready to paste into your selling platform.</div></div>
@@ -266,7 +266,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
             <li>Images are compressed automatically — originals never leave your device</li>
           </ul>
         </div>
-        <div class="modal-powered">Powered by Google Gemini 2.5 Flash · Built at GDG London IWD 2026</div>
+        <div class="modal-powered">Powered by Google Gemini 2.5 Flash + Flash-Lite · Built at GDG London IWD 2026</div>
       </div>
     </div>
     <div class="modal-pane" id="paneFeedback">
@@ -357,9 +357,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     <h3 id="zoneTitle">Drop images here or click to browse</h3>
     <p id="zoneSubtitle">Upload photos of items you want to sell. PNG, JPG, or WEBP</p>
     <div class="upload-meta">
-      <div class="upload-hint">ⓘ Max 20 photos · Auto-compressed to 1MB</div>
+      <div class="upload-hint">ⓘ Max 12 photos · Auto-compressed to 1MB</div>
       <div class="photo-counter" id="photoCounter">
-        <span id="counterText">0 / 20</span>
+        <span id="counterText">0 / 12</span>
         <div class="counter-bar"><div class="counter-fill" id="counterFill"></div></div>
       </div>
     </div>
@@ -417,457 +417,790 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 <div class="toast" id="toast"></div>
 
 <script>
-const GEMINI_KEY = 'AIzaSyBFK6xIC-tL-MmehX3B8vGYNs-ngneptTY';
-const MODEL = 'gemini-2.5-flash';
-const MAX_PHOTOS = 20;
-const MAX_FILE_MB = 25;
-let files = [], platform = 'Vinted', currency = 'GBP', lastResults = [];
-function sym() { return {GBP:'£',EUR:'€',USD:'$'}[currency]||'£'; }
+  const API_BASE = 'https://sell-smart-ivory.vercel.app/';
+  const ANALYSIS_MODEL = 'gemini-2.5-flash-lite';
+  const LISTING_MODEL = 'gemini-2.5-flash';
+  const MAX_PHOTOS = 12;
+  const MAX_FILE_MB = 25;
 
-// ── FILE INPUT ──
-const fileInput = document.getElementById('fileInput');
-const uploadZone = document.getElementById('uploadZone');
+  let files = [];
+  let compressedCache = new Map();
+  let platform = 'Vinted';
+  let currency = 'GBP';
+  let lastResults = [];
 
-uploadZone.addEventListener('click', function() {
-  if (files.length < MAX_PHOTOS) fileInput.click();
-  else showWarn('Photo limit reached', 'You have ' + MAX_PHOTOS + ' photos selected. Remove some before adding more.');
-});
-fileInput.addEventListener('change', function() {
-  if (this.files && this.files.length) { handleFiles(this.files); this.value = ''; }
-});
-uploadZone.addEventListener('dragover', function(e) {
-  e.preventDefault(); e.stopPropagation();
-  if (files.length < MAX_PHOTOS) uploadZone.classList.add('drag-over');
-});
-uploadZone.addEventListener('dragleave', function(e) { e.preventDefault(); uploadZone.classList.remove('drag-over'); });
-uploadZone.addEventListener('drop', function(e) {
-  e.preventDefault(); e.stopPropagation();
-  uploadZone.classList.remove('drag-over');
-  if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-});
-
-function handleFiles(incoming) {
-  hideBanner('errBanner');
-  var arr = Array.from(incoming);
-  var skippedLimit=0, skippedType=0, skippedSize=0, skippedDup=0;
-
-  for (var i=0; i<arr.length; i++) {
-    var f = arr[i];
-    if (files.length >= MAX_PHOTOS) { skippedLimit += (arr.length - i); break; }
-    if (!f.type.startsWith('image/')) { skippedType++; continue; }
-    if (f.size > MAX_FILE_MB * 1024 * 1024) { skippedSize++; continue; }
-    if (files.find(function(x){ return x.name===f.name && x.size===f.size; })) { skippedDup++; continue; }
-    files.push(f);
+  function sym() {
+    return { GBP: '£', EUR: '€', USD: '$' }[currency] || '£';
   }
 
-  var msgs = [];
-  if (skippedLimit) msgs.push(skippedLimit + ' photo' + (skippedLimit>1?'s':'') + ' not added — ' + MAX_PHOTOS + ' photo limit reached');
-  if (skippedType) msgs.push(skippedType + ' file' + (skippedType>1?'s':'') + ' skipped (not an image)');
-  if (skippedSize) msgs.push(skippedSize + ' file' + (skippedSize>1?'s':'') + ' skipped (over ' + MAX_FILE_MB + 'MB)');
-  if (skippedDup) msgs.push(skippedDup + ' duplicate' + (skippedDup>1?'s':'') + ' ignored');
-  if (msgs.length) showWarn('Some photos skipped', msgs.join(' · '));
+  // ── FILE INPUT ──
+  const fileInput = document.getElementById('fileInput');
+  const uploadZone = document.getElementById('uploadZone');
 
-  renderThumbs();
-}
-
-function removeFile(i) { files.splice(i,1); hideBanner('warnBanner'); renderThumbs(); }
-function clearAll() {
-  files=[]; lastResults=[];
-  renderThumbs();
-  document.getElementById('resultsWrap').style.display='none';
-  document.getElementById('emptyState').style.display='block';
-  hideBanner('errBanner'); hideBanner('warnBanner');
-}
-
-function renderThumbs() {
-  var sec=document.getElementById('photosSection'), wrap=document.getElementById('genWrap');
-  var grid=document.getElementById('photoGrid'), lbl=document.getElementById('photosLabel');
-  var counter=document.getElementById('photoCounter'), ct=document.getElementById('counterText');
-  var cf=document.getElementById('counterFill');
-  var count=files.length, pct=(count/MAX_PHOTOS)*100, atLimit=count>=MAX_PHOTOS, near=count>=(MAX_PHOTOS-3);
-
-  if (count>0) {
-    counter.classList.add('visible');
-    if (near) counter.classList.add('warn'); else counter.classList.remove('warn');
-    ct.textContent=count+' / '+MAX_PHOTOS;
-    cf.style.width=pct+'%';
-    if (near) cf.classList.add('warn'); else cf.classList.remove('warn');
-  } else { counter.classList.remove('visible'); }
-
-  document.getElementById('zoneTitle').textContent = atLimit ? 'Limit reached ('+MAX_PHOTOS+' photos max)' : 'Drop images here or click to browse';
-  if (atLimit) uploadZone.classList.add('at-limit'); else uploadZone.classList.remove('at-limit');
-
-  if (!count) { sec.style.display='none'; wrap.style.display='none'; return; }
-  sec.style.display='block'; wrap.style.display='block';
-  lbl.textContent=count+' photo'+(count!==1?'s':'')+' selected'+(atLimit?' (max)':'');
-  grid.innerHTML='';
-  files.forEach(function(f,i) {
-    var url=URL.createObjectURL(f), d=document.createElement('div');
-    d.className='photo-thumb';
-    d.innerHTML='<img src="'+url+'" alt="photo"><button class="rm" onclick="removeFile('+i+')">✕</button>';
-    grid.appendChild(d);
+  uploadZone.addEventListener('click', function () {
+    if (files.length < MAX_PHOTOS) fileInput.click();
+    else showWarn('Photo limit reached', 'You have ' + MAX_PHOTOS + ' photos selected. Remove some before adding more.');
   });
-}
 
-// ── COMPRESS ──
-function compress(file, maxKB) {
-  maxKB=maxKB||900;
-  return new Promise(function(resolve,reject) {
-    var reader=new FileReader();
-    reader.onerror=function(){ reject(new Error('Could not read: '+file.name)); };
-    reader.onload=function(e) {
-      var img=new Image();
-      img.onerror=function(){ reject(new Error('Could not load image: '+file.name)); };
-      img.onload=function() {
-        try {
-          var canvas=document.createElement('canvas');
-          var w=img.width,h=img.height,max=1200;
-          if(w>max||h>max){var s=max/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
-          canvas.width=w;canvas.height=h;
-          canvas.getContext('2d').drawImage(img,0,0,w,h);
-          var q=0.85;
-          function go(){
-            var d=canvas.toDataURL('image/jpeg',q);
-            if((d.length*3/4)/1024>maxKB && q>0.2){q-=0.1;go();}
-            else resolve(d.split(',')[1]);
-          }
-          go();
-        } catch(err){ reject(new Error('Compression failed: '+err.message)); }
-      };
-      img.src=e.target.result;
-    };
-    reader.readAsDataURL(file);
+  fileInput.addEventListener('change', function () {
+    if (this.files && this.files.length) {
+      handleFiles(this.files);
+      this.value = '';
+    }
   });
-}
 
-// ── GEMINI API ──
-async function callGemini(contents) {
-  var url='https://generativelanguage.googleapis.com/v1beta/models/'+MODEL+':generateContent?key='+GEMINI_KEY;
-  var res;
-  try { res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:contents,generationConfig:{temperature:0.35,maxOutputTokens:2048}})}); }
-  catch(e){ throw new Error('Network error — check your internet connection and try again.'); }
+  uploadZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (files.length < MAX_PHOTOS) uploadZone.classList.add('drag-over');
+  });
 
-  if(!res.ok){
-    var eb={};
-    try{eb=await res.json();}catch(e){}
-    var m=eb.error?eb.error.message:'API error '+res.status;
-    if(res.status===400) throw new Error('Invalid request — try fewer photos. ('+m+')');
-    if(res.status===403) throw new Error('API key invalid or quota exceeded. Check your Gemini key.');
-    if(res.status===429) throw new Error('Rate limited — wait a moment and try again.');
-    if(res.status>=500) throw new Error('Gemini service error — try again shortly. ('+m+')');
-    throw new Error(m);
+  uploadZone.addEventListener('dragleave', function (e) {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+  });
+
+  uploadZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadZone.classList.remove('drag-over');
+    if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+  });
+
+  function fileCacheKey(file) {
+    return file.name + ':' + file.size + ':' + file.lastModified;
   }
 
-  var data;
-  try{data=await res.json();}catch(e){throw new Error('Invalid response from AI. Please try again.');}
-  if(!data.candidates||!data.candidates[0]||!data.candidates[0].content){
-    var reason=data.promptFeedback&&data.promptFeedback.blockReason;
-    if(reason) throw new Error('Blocked by AI safety filters ('+reason+'). Try different photos.');
-    throw new Error('AI returned an empty response. Please try again.');
-  }
-  return data.candidates[0].content.parts[0].text||'';
-}
+  function handleFiles(incoming) {
+    hideBanner('errBanner');
 
-function parseJ(raw){
-  try{return JSON.parse(raw.replace(/```json\n?|```\n?/g,'').trim());}catch(e){return null;}
-}
+    var arr = Array.from(incoming);
+    var skippedLimit = 0, skippedType = 0, skippedSize = 0, skippedDup = 0;
 
-// ── ANALYSE ──
-async function analyseImg(file){
-  var data=await compress(file);
-  var raw=await callGemini([{role:'user',parts:[
-    {inlineData:{mimeType:'image/jpeg',data:data}},
-    {text:'Analyse this product image. Return ONLY valid JSON:\n{"brand":"brand or Unknown","model":"model or Unknown","productType":"specific type e.g. trainers, jacket, phone, handbag","color":"primary colour","condition":"New|Like New|Good|Fair|Poor","gender":"Men|Women|Unisex|N/A","size":"size if visible else null","productSignature":"brand+model+type+colour combined"}'}
-  ]}]);
-  return parseJ(raw)||{brand:'Unknown',model:'Unknown',productType:'Item',color:'Unknown',condition:'Good',gender:'Unisex',size:null,productSignature:file.name};
-}
-
-// ── CLUSTER ──
-function clusterImages(analyses){
-  var groups=[],used=new Set();
-  analyses.forEach(function(a,i){
-    if(used.has(i))return;
-    var grp=[i];used.add(i);
-    var sigA=(a.productSignature||'').toLowerCase(),typeA=(a.productType||'').toLowerCase(),brandA=(a.brand||'').toLowerCase();
-    analyses.forEach(function(b,j){
-      if(used.has(j)||i===j)return;
-      var sigB=(b.productSignature||'').toLowerCase(),typeB=(b.productType||'').toLowerCase(),brandB=(b.brand||'').toLowerCase();
-      var sameType=typeA&&typeB&&typeA===typeB;
-      var sameBrand=brandA!=='unknown'&&brandA&&brandA===brandB;
-      var words=sigA.split(/\s+/).filter(function(w){return w.length>3;});
-      var overlap=words.filter(function(w){return sigB.includes(w);}).length;
-      var matched=overlap>=Math.max(2,Math.ceil(words.length*0.45));
-      if(sameType&&(sameBrand||matched)){grp.push(j);used.add(j);}
-    });
-    groups.push(grp);
-  });
-  return groups;
-}
-
-// ── GEN LISTING ──
-async function genListing(cFiles,cMetas){
-  var parts=[];
-  for(var i=0;i<cFiles.length;i++){var d=await compress(cFiles[i]);parts.push({inlineData:{mimeType:'image/jpeg',data:d}});}
-  var guides={'Vinted':'Friendly and casual. State brand, size, condition clearly.','eBay':'Detailed and keyword-rich. Include model numbers if visible.','Depop':'Trendy and conversational. Reference style/era. Include measurements.','Facebook Marketplace':'Casual and direct. Keep it simple.'};
-  var metaStr=cMetas.map(function(m,i){return 'Image '+(i+1)+': '+JSON.stringify(m);}).join('\n');
-  parts.push({text:'Expert resale listing writer for '+platform+'. Style: '+(guides[platform]||'')+'\nCurrency: '+currency+' (use '+sym()+')\n\nAnalyses:\n'+metaStr+'\n\nReturn ONLY valid JSON:\n{"title":"searchable title max 80 chars","description":"4-6 sentences: what it is, condition, features, sizing if clothing, why to buy","suggestedPrice":0,"rrp":0,"condition":"New|Like New|Good|Fair|Poor","category":"accurate '+platform+' category","tags":["8-12 search tags"]}' });
-  var raw=await callGemini([{role:'user',parts:parts}]);
-  return parseJ(raw)||{title:'Item for Sale',description:raw.substring(0,500),suggestedPrice:0,rrp:0,condition:'Good',category:'Other',tags:[]};
-}
-
-// ── MAIN GENERATE ──
-async function generate(){
-  if(!files.length){showErr('No photos','Please add at least one photo before generating.');return;}
-  hideBanner('errBanner');hideBanner('warnBanner');
-  setLoad(true,'Preparing '+files.length+' photo'+(files.length!==1?'s':''),'Starting analysis…');
-  setProg(0);
-  document.getElementById('genBtn').disabled=true;
-  document.getElementById('resultsWrap').style.display='none';
-  document.getElementById('emptyState').style.display='none';
-
-  try{
-    var analyses=[];
-    for(var i=0;i<files.length;i++){
-      setLoad(true,'Analysing photo '+(i+1)+' of '+files.length,files[i].name);
-      setProg(Math.round(((i+1)/files.length)*35));
-      try{ analyses.push(await analyseImg(files[i])); }
-      catch(imgErr){
-        console.warn('Skipping photo',i,imgErr.message);
-        analyses.push({brand:'Unknown',model:'Unknown',productType:'Item',color:'Unknown',condition:'Good',gender:'Unisex',size:null,productSignature:files[i].name});
-        showWarn('Photo skipped','Could not analyse photo '+(i+1)+' ('+files[i].name+'). Continuing with remaining photos.');
+    for (var i = 0; i < arr.length; i++) {
+      var f = arr[i];
+      if (files.length >= MAX_PHOTOS) {
+        skippedLimit += (arr.length - i);
+        break;
       }
+      if (!f.type.startsWith('image/')) {
+        skippedType++;
+        continue;
+      }
+      if (f.size > MAX_FILE_MB * 1024 * 1024) {
+        skippedSize++;
+        continue;
+      }
+      if (files.find(function (x) { return x.name === f.name && x.size === f.size && x.lastModified === f.lastModified; })) {
+        skippedDup++;
+        continue;
+      }
+      files.push(f);
     }
 
-    setLoad(true,'Grouping items','Matching photos of the same product…');
-    setProg(45);
-    var groups=clusterImages(analyses);
+    var msgs = [];
+    if (skippedLimit) msgs.push(skippedLimit + ' photo' + (skippedLimit > 1 ? 's' : '') + ' not added — ' + MAX_PHOTOS + ' photo limit reached');
+    if (skippedType) msgs.push(skippedType + ' file' + (skippedType > 1 ? 's' : '') + ' skipped (not an image)');
+    if (skippedSize) msgs.push(skippedSize + ' file' + (skippedSize > 1 ? 's' : '') + ' skipped (over ' + MAX_FILE_MB + 'MB)');
+    if (skippedDup) msgs.push(skippedDup + ' duplicate' + (skippedDup > 1 ? 's' : '') + ' ignored');
+    if (msgs.length) showWarn('Some photos skipped', msgs.join(' · '));
 
-    var results=[];
-    for(var g=0;g<groups.length;g++){
-      setLoad(true,'Writing listing '+(g+1)+' of '+groups.length,'Crafting your listing…');
-      setProg(45+Math.round(((g+1)/groups.length)*52));
-      var idxs=groups[g];
-      var listing=await genListing(idxs.map(function(i){return files[i];}),idxs.map(function(i){return analyses[i];}));
-      results.push({listing:listing,idxs:idxs,metas:idxs.map(function(i){return analyses[i];})});
+    renderThumbs();
+  }
+
+  function removeFile(i) {
+    var f = files[i];
+    if (f) compressedCache.delete(fileCacheKey(f));
+    files.splice(i, 1);
+    hideBanner('warnBanner');
+    renderThumbs();
+  }
+
+  function clearAll() {
+    files = [];
+    compressedCache.clear();
+    lastResults = [];
+    renderThumbs();
+    document.getElementById('resultsWrap').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    hideBanner('errBanner');
+    hideBanner('warnBanner');
+  }
+
+  function renderThumbs() {
+    var sec = document.getElementById('photosSection');
+    var wrap = document.getElementById('genWrap');
+    var grid = document.getElementById('photoGrid');
+    var lbl = document.getElementById('photosLabel');
+    var counter = document.getElementById('photoCounter');
+    var ct = document.getElementById('counterText');
+    var cf = document.getElementById('counterFill');
+
+    var count = files.length;
+    var pct = (count / MAX_PHOTOS) * 100;
+    var atLimit = count >= MAX_PHOTOS;
+    var near = count >= (MAX_PHOTOS - 2);
+
+    if (count > 0) {
+      counter.classList.add('visible');
+      if (near) counter.classList.add('warn'); else counter.classList.remove('warn');
+      ct.textContent = count + ' / ' + MAX_PHOTOS;
+      cf.style.width = pct + '%';
+      if (near) cf.classList.add('warn'); else cf.classList.remove('warn');
+    } else {
+      counter.classList.remove('visible');
     }
 
-    setProg(100);
-    lastResults=results;
-    setTimeout(function(){
+    document.getElementById('zoneTitle').textContent = atLimit ? 'Limit reached (' + MAX_PHOTOS + ' photos max)' : 'Drop images here or click to browse';
+
+    if (atLimit) uploadZone.classList.add('at-limit');
+    else uploadZone.classList.remove('at-limit');
+
+    if (!count) {
+      sec.style.display = 'none';
+      wrap.style.display = 'none';
+      return;
+    }
+
+    sec.style.display = 'block';
+    wrap.style.display = 'block';
+    lbl.textContent = count + ' photo' + (count !== 1 ? 's' : '') + ' selected' + (atLimit ? ' (max)' : '');
+    grid.innerHTML = '';
+
+    files.forEach(function (f, i) {
+      var url = URL.createObjectURL(f);
+      var d = document.createElement('div');
+      d.className = 'photo-thumb';
+      d.innerHTML = '<img src="' + url + '" alt="photo"><button class="rm" onclick="removeFile(' + i + ')">✕</button>';
+      grid.appendChild(d);
+    });
+  }
+
+  // ── COMPRESS ──
+  function compress(file, maxKB) {
+    maxKB = maxKB || 900;
+
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+
+      reader.onerror = function () {
+        reject(new Error('Could not read: ' + file.name));
+      };
+
+      reader.onload = function (e) {
+        var img = new Image();
+
+        img.onerror = function () {
+          reject(new Error('Could not load image: ' + file.name));
+        };
+
+        img.onload = function () {
+          try {
+            var canvas = document.createElement('canvas');
+            var w = img.width;
+            var h = img.height;
+            var max = 1400;
+
+            if (w > max || h > max) {
+              var s = max / Math.max(w, h);
+              w = Math.round(w * s);
+              h = Math.round(h * s);
+            }
+
+            canvas.width = w;
+            canvas.height = h;
+
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+
+            var q = 0.86;
+
+            function go() {
+              var d = canvas.toDataURL('image/jpeg', q);
+              var approxKB = (d.length * 3 / 4) / 1024;
+
+              if (approxKB > maxKB && q > 0.22) {
+                q -= 0.08;
+                go();
+              } else {
+                resolve(d.split(',')[1]);
+              }
+            }
+
+            go();
+          } catch (err) {
+            reject(new Error('Compression failed: ' + err.message));
+          }
+        };
+
+        img.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function compressOnce(file, maxKB) {
+    var key = fileCacheKey(file);
+    if (compressedCache.has(key)) return compressedCache.get(key);
+    var result = await compress(file, maxKB || 900);
+    compressedCache.set(key, result);
+    return result;
+  }
+
+  // ── GEMINI API ──
+  async function callGemini(contents, model, generationConfig) {
+    var res;
+
+    try {
+      res = await fetch(API_BASE + '/api/gemini?model=' + encodeURIComponent(model), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: contents,
+          generationConfig: generationConfig || {
+            temperature: 0.25,
+            maxOutputTokens: 4096
+          }
+        })
+      });
+    } catch (e) {
+      throw new Error('Network error — check your internet connection and try again.');
+    }
+
+    var data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      throw new Error('Invalid response from server. Please try again.');
+    }
+
+    if (!res.ok) {
+      var msg =
+        (data && data.error && data.error.message) ||
+        data.error ||
+        data.message ||
+        ('API error ' + res.status);
+
+      if (res.status === 400) throw new Error('Invalid request — please try fewer or clearer photos. (' + msg + ')');
+      if (res.status === 401) throw new Error('Server API key missing or invalid.');
+      if (res.status === 403) throw new Error('Access denied by AI service. Check server configuration.');
+      if (res.status === 429) throw new Error('Rate limited — wait a moment and try again.');
+      if (res.status >= 500) throw new Error('Server error — try again shortly. (' + msg + ')');
+      throw new Error(msg);
+    }
+
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      var reason = data.promptFeedback && data.promptFeedback.blockReason;
+      if (reason) throw new Error('Blocked by AI safety filters (' + reason + '). Try different photos.');
+      throw new Error('AI returned an empty response. Please try again.');
+    }
+
+    return data.candidates[0].content.parts[0].text || '';
+  }
+
+  function parseJ(raw) {
+    try {
+      return JSON.parse(String(raw || '').replace(/```json\s*|```\s*/g, '').trim());
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ── BATCH ANALYSIS ──
+  async function analyseAllImagesBatch(fs) {
+    var parts = [];
+
+    for (var i = 0; i < fs.length; i++) {
+      var data = await compressOnce(fs[i], 900);
+      parts.push({
+        inlineData: {
+          mimeType: 'image/jpeg',
+          data: data
+        }
+      });
+    }
+
+    parts.push({
+      text:
+        'Analyse all uploaded product photos together.\n' +
+        'Some photos may show the same item from different angles.\n' +
+        'Group matching photos into the same item.\n\n' +
+        'Return ONLY valid JSON in this format:\n' +
+        '{\n' +
+        '  "items": [\n' +
+        '    {\n' +
+        '      "groupId": 1,\n' +
+        '      "photoIndexes": [0,1],\n' +
+        '      "brand": "brand or Unknown",\n' +
+        '      "model": "model or Unknown",\n' +
+        '      "productType": "specific type",\n' +
+        '      "color": "primary colour",\n' +
+        '      "condition": "New|Like New|Good|Fair|Poor",\n' +
+        '      "gender": "Men|Women|Unisex|N/A",\n' +
+        '      "size": "size if visible else null",\n' +
+        '      "productSignature": "combined signature"\n' +
+        '    }\n' +
+        '  ]\n' +
+        '}\n\n' +
+        'Rules:\n' +
+        '- photoIndexes must be zero-based\n' +
+        '- Every uploaded photo must appear in exactly one item group\n' +
+        '- Group only when clearly the same product\n' +
+        '- Return JSON only, no markdown'
+    });
+
+    var raw = await callGemini(
+      [{ role: 'user', parts: parts }],
+      ANALYSIS_MODEL,
+      { temperature: 0.1, maxOutputTokens: 4096 }
+    );
+
+    var parsed = parseJ(raw);
+
+    if (!parsed || !Array.isArray(parsed.items)) {
+      throw new Error('Could not analyse uploaded photos as a batch.');
+    }
+
+    // normalise
+    return parsed.items.map(function (item, idx) {
+      return {
+        groupId: item.groupId || (idx + 1),
+        photoIndexes: Array.isArray(item.photoIndexes) ? item.photoIndexes.filter(function (n) {
+          return Number.isInteger(n) && n >= 0 && n < files.length;
+        }) : [],
+        brand: item.brand || 'Unknown',
+        model: item.model || 'Unknown',
+        productType: item.productType || 'Item',
+        color: item.color || 'Unknown',
+        condition: item.condition || 'Good',
+        gender: item.gender || 'Unisex',
+        size: item.size || null,
+        productSignature: item.productSignature || ((item.brand || 'Unknown') + ' ' + (item.productType || 'Item'))
+      };
+    }).filter(function (item) {
+      return item.photoIndexes.length > 0;
+    });
+  }
+
+  // ── LISTING GENERATION ──
+  async function genListingFromMeta(groupMeta) {
+    var guides = {
+      'Vinted': 'Friendly and casual. State brand, size, condition clearly.',
+      'eBay': 'Detailed and keyword-rich. Include model numbers if visible.',
+      'Depop': 'Trendy and conversational. Reference style or era if relevant. Include sizing cues.',
+      'Facebook Marketplace': 'Casual and direct. Keep it simple and practical.'
+    };
+
+    var prompt = [{
+      role: 'user',
+      parts: [{
+        text:
+          'You are an expert resale listing writer for ' + platform + '.\n\n' +
+          'Style guide: ' + (guides[platform] || '') + '\n' +
+          'Currency: ' + currency + ' (use symbol ' + sym() + ')\n\n' +
+          'Item metadata:\n' + JSON.stringify(groupMeta, null, 2) + '\n\n' +
+          'Return ONLY valid JSON:\n' +
+          '{\n' +
+          '  "title": "searchable title max 80 chars",\n' +
+          '  "description": "4-6 sentences: what it is, condition, features, sizing if clothing, why to buy",\n' +
+          '  "suggestedPrice": 0,\n' +
+          '  "rrp": 0,\n' +
+          '  "condition": "New|Like New|Good|Fair|Poor",\n' +
+          '  "category": "accurate ' + platform + ' category",\n' +
+          '  "tags": ["8-12 search tags"]\n' +
+          '}'
+      }]
+    }];
+
+    var raw = await callGemini(
+      prompt,
+      LISTING_MODEL,
+      { temperature: 0.35, maxOutputTokens: 2048 }
+    );
+
+    return parseJ(raw) || {
+      title: 'Item for Sale',
+      description: 'Pre-owned item in good condition.',
+      suggestedPrice: 0,
+      rrp: 0,
+      condition: groupMeta.condition || 'Good',
+      category: 'Other',
+      tags: []
+    };
+  }
+
+  // ── MAIN GENERATE ──
+  async function generate() {
+    if (!files.length) {
+      showErr('No photos', 'Please add at least one photo before generating.');
+      return;
+    }
+
+    hideBanner('errBanner');
+    hideBanner('warnBanner');
+    setLoad(true, 'Preparing photos', 'Compressing images…');
+    setProg(5);
+    document.getElementById('genBtn').disabled = true;
+    document.getElementById('resultsWrap').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+
+    try {
+      setLoad(true, 'Analysing photos', 'Grouping matching items…');
+      setProg(25);
+
+      var groupedItems = await analyseAllImagesBatch(files);
+
+      // fallback if Gemini misses an image
+      var covered = new Set();
+      groupedItems.forEach(function (item) {
+        item.photoIndexes.forEach(function (idx) { covered.add(idx); });
+      });
+      for (var i = 0; i < files.length; i++) {
+        if (!covered.has(i)) {
+          groupedItems.push({
+            groupId: groupedItems.length + 1,
+            photoIndexes: [i],
+            brand: 'Unknown',
+            model: 'Unknown',
+            productType: 'Item',
+            color: 'Unknown',
+            condition: 'Good',
+            gender: 'Unisex',
+            size: null,
+            productSignature: files[i].name
+          });
+        }
+      }
+
+      setLoad(true, 'Writing listings', 'Generating final listing copy…');
+      setProg(60);
+
+      var results = [];
+      for (var g = 0; g < groupedItems.length; g++) {
+        var item = groupedItems[g];
+        var listing = await genListingFromMeta(item);
+
+        results.push({
+          listing: listing,
+          idxs: item.photoIndexes,
+          metas: item.photoIndexes.map(function () { return item; })
+        });
+
+        setProg(60 + Math.round(((g + 1) / groupedItems.length) * 35));
+      }
+
+      setProg(100);
+      lastResults = results;
+
+      setTimeout(function () {
+        setLoad(false);
+        renderResults(results);
+        document.getElementById('genBtn').disabled = false;
+        showToast('✓ ' + results.length + ' listing' + (results.length !== 1 ? 's' : '') + ' generated!');
+      }, 300);
+
+    } catch (err) {
       setLoad(false);
-      renderResults(results);
-      document.getElementById('genBtn').disabled=false;
-      showToast('✓ '+results.length+' listing'+(results.length!==1?'s':'')+' generated!');
-    },350);
+      var msg = err.message || 'Something went wrong. Please try again.';
+      var title = 'Generation failed';
 
-  }catch(err){
-    setLoad(false);
-    var title='Generation failed',msg=err.message||'Something went wrong. Please try again.';
-    if(msg.includes('network')||msg.includes('fetch')) title='Connection error';
-    if(msg.includes('quota')||msg.includes('403')) title='API key issue';
-    if(msg.includes('429')) title='Rate limited';
-    if(msg.includes('blocked')) title='Content blocked';
-    showErr(title,msg);
-    document.getElementById('emptyState').style.display='block';
-    document.getElementById('genBtn').disabled=false;
+      if (msg.toLowerCase().includes('network')) title = 'Connection error';
+      if (msg.toLowerCase().includes('rate limited')) title = 'Rate limited';
+      if (msg.toLowerCase().includes('blocked')) title = 'Content blocked';
+      if (msg.toLowerCase().includes('api')) title = 'API issue';
+
+      showErr(title, msg);
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('genBtn').disabled = false;
+    }
   }
-}
 
-// ── RENDER ──
-function condCls(c){var m={'new':'cond-new','like new':'cond-likenew','good':'cond-good','fair':'cond-fair','poor':'cond-poor'};return m[(c||'').toLowerCase()]||'cond-good';}
-function fmtPrice(n){var x=parseFloat(n);return isNaN(x)?String(n||'—'):sym()+x.toFixed(2);}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  // ── RENDER ──
+  function condCls(c) {
+    var m = {
+      'new': 'cond-new',
+      'like new': 'cond-likenew',
+      'good': 'cond-good',
+      'fair': 'cond-fair',
+      'poor': 'cond-poor'
+    };
+    return m[(c || '').toLowerCase()] || 'cond-good';
+  }
 
-function buildText(listing,price,rrp){
-  return [listing.title,'',listing.description,'',
-    'Condition: '+listing.condition,
-    'Price: '+price+(listing.rrp&&parseFloat(listing.rrp)>0?'  (RRP: '+rrp+')':''),
-    listing.category?'Category: '+listing.category:'',
-    '',(listing.tags||[]).map(function(t){return '#'+t;}).join(' ')
-  ].join('\n').trim();
-}
+  function fmtPrice(n) {
+    var x = parseFloat(n);
+    return isNaN(x) ? String(n || '—') : sym() + x.toFixed(2);
+  }
 
-function renderResults(results){
-  var cont=document.getElementById('listingsCont');
-  cont.innerHTML='';
-  document.getElementById('resultsWrap').style.display='block';
-  document.getElementById('resCount').textContent=results.length+' listing'+(results.length!==1?'s':'');
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
-  results.forEach(function(item,i){
-    var listing=item.listing,idxs=item.idxs,metas=item.metas;
-    var card=document.createElement('div');
-    card.className='listing-card';
-    card.style.animationDelay=(i*0.08)+'s';
-    var imgs=idxs.map(function(idx){return '<img src="'+URL.createObjectURL(files[idx])+'" alt="Product">';}).join('');
-    var tags=(listing.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('');
-    var sig=metas.map(function(m){return m.productSignature;}).filter(Boolean).join(' · ');
-    var price=fmtPrice(listing.suggestedPrice),rrp=fmtPrice(listing.rrp);
-    var dotClass='bdot-'+platform.split(' ')[0];
-    var fullText=buildText(listing,price,rrp);
-    var enc=encodeURIComponent(fullText),encTitle=encodeURIComponent(listing.title||'');
-    var dlName='listing-'+(i+1)+'-'+platform.toLowerCase().replace(/\s/g,'-');
+  function buildText(listing, price, rrp) {
+    return [
+      listing.title,
+      '',
+      listing.description,
+      '',
+      'Condition: ' + listing.condition,
+      'Price: ' + price + (listing.rrp && parseFloat(listing.rrp) > 0 ? '  (RRP: ' + rrp + ')' : ''),
+      listing.category ? 'Category: ' + listing.category : '',
+      '',
+      (listing.tags || []).map(function (t) { return '#' + t; }).join(' ')
+    ].join('\n').trim();
+  }
 
-    card.innerHTML=
-      '<div class="card-imgs">'+imgs+'</div>'+
-      '<div class="card-body">'+
-        '<div class="card-group-info">📎 '+idxs.length+' photo'+(idxs.length!==1?'s':'')+' grouped · '+esc(sig)+'</div>'+
-        '<div class="card-top">'+
-          '<div><div class="card-num">Listing '+(i+1)+'</div><div class="card-title">'+esc(listing.title)+'</div></div>'+
-          '<div class="card-prices">'+
-            '<div class="card-price">'+esc(price)+'</div>'+
-            (listing.rrp&&parseFloat(listing.rrp)>0?'<div class="card-rrp">'+esc(rrp)+'</div><div class="card-rrp-lbl">RRP</div>':'')+
-          '</div>'+
-        '</div>'+
-        '<p class="card-desc">'+esc(listing.description)+'</p>'+
-        '<div class="tags">'+tags+'</div>'+
-      '</div>'+
-      '<div class="card-footer">'+
-        '<div class="badges">'+
-          '<div class="badge"><div class="bdot '+dotClass+'"></div>'+esc(platform)+'</div>'+
-          '<div class="badge '+condCls(listing.condition)+'">'+esc(listing.condition)+'</div>'+
-          (listing.category?'<div class="badge">'+esc(listing.category)+'</div>':'')+
-        '</div>'+
-        '<div class="action-btns">'+
-          '<button class="copy-btn" data-v="'+encTitle+'" onclick="doCopy(this,\'📋 Title\')">📋 Title</button>'+
-          '<button class="copy-btn" data-v="'+enc+'" onclick="doCopy(this,\'📋 Copy all\')">📋 Copy all</button>'+
-          '<button class="dl-btn" data-v="'+enc+'" data-name="'+dlName+'" onclick="doDownload(this)">↓ Download</button>'+
-        '</div>'+
-      '</div>';
-    cont.appendChild(card);
+  function renderResults(results) {
+    var cont = document.getElementById('listingsCont');
+    cont.innerHTML = '';
+    document.getElementById('resultsWrap').style.display = 'block';
+    document.getElementById('resCount').textContent = results.length + ' listing' + (results.length !== 1 ? 's' : '');
+
+    results.forEach(function (item, i) {
+      var listing = item.listing;
+      var idxs = item.idxs;
+      var metas = item.metas;
+
+      var card = document.createElement('div');
+      card.className = 'listing-card';
+      card.style.animationDelay = (i * 0.08) + 's';
+
+      var imgs = idxs.map(function (idx) {
+        return '<img src="' + URL.createObjectURL(files[idx]) + '" alt="Product">';
+      }).join('');
+
+      var tags = (listing.tags || []).map(function (t) {
+        return '<span class="tag">' + esc(t) + '</span>';
+      }).join('');
+
+      var sig = metas.map(function (m) {
+        return m.productSignature;
+      }).filter(Boolean).join(' · ');
+
+      var price = fmtPrice(listing.suggestedPrice);
+      var rrp = fmtPrice(listing.rrp);
+      var dotClass = 'bdot-' + platform.split(' ')[0];
+      var fullText = buildText(listing, price, rrp);
+      var enc = encodeURIComponent(fullText);
+      var encTitle = encodeURIComponent(listing.title || '');
+      var dlName = 'listing-' + (i + 1) + '-' + platform.toLowerCase().replace(/\s/g, '-');
+
+      card.innerHTML =
+        '<div class="card-imgs">' + imgs + '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-group-info">📎 ' + idxs.length + ' photo' + (idxs.length !== 1 ? 's' : '') + ' grouped · ' + esc(sig) + '</div>' +
+          '<div class="card-top">' +
+            '<div><div class="card-num">Listing ' + (i + 1) + '</div><div class="card-title">' + esc(listing.title) + '</div></div>' +
+            '<div class="card-prices">' +
+              '<div class="card-price">' + esc(price) + '</div>' +
+              (listing.rrp && parseFloat(listing.rrp) > 0 ? '<div class="card-rrp">' + esc(rrp) + '</div><div class="card-rrp-lbl">RRP</div>' : '') +
+            '</div>' +
+          '</div>' +
+          '<p class="card-desc">' + esc(listing.description) + '</p>' +
+          '<div class="tags">' + tags + '</div>' +
+        '</div>' +
+        '<div class="card-footer">' +
+          '<div class="badges">' +
+            '<div class="badge"><div class="bdot ' + dotClass + '"></div>' + esc(platform) + '</div>' +
+            '<div class="badge ' + condCls(listing.condition) + '">' + esc(listing.condition) + '</div>' +
+            (listing.category ? '<div class="badge">' + esc(listing.category) + '</div>' : '') +
+          '</div>' +
+          '<div class="action-btns">' +
+            '<button class="copy-btn" data-v="' + encTitle + '" onclick="doCopy(this)">📋 Title</button>' +
+            '<button class="copy-btn" data-v="' + enc + '" onclick="doCopy(this)">📋 Copy all</button>' +
+            '<button class="dl-btn" data-v="' + enc + '" data-name="' + dlName + '" onclick="doDownload(this)">↓ Download</button>' +
+          '</div>' +
+        '</div>';
+
+      cont.appendChild(card);
+    });
+
+    document.getElementById('resultsWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── DOWNLOAD ──
+  function doDownload(btn) {
+    var text = decodeURIComponent(btn.dataset.v);
+    var name = (btn.dataset.name || 'listing') + '.txt';
+    triggerDownload(text, name);
+    showToast('↓ Listing downloaded!');
+  }
+
+  function downloadAll() {
+    if (!lastResults.length) return;
+
+    var all = lastResults.map(function (item, i) {
+      var l = item.listing;
+      var price = fmtPrice(l.suggestedPrice);
+      var rrp = fmtPrice(l.rrp);
+
+      return '══════════════════════════════\nLISTING ' + (i + 1) + ' — ' + platform.toUpperCase() + '\n══════════════════════════════\n' + buildText(l, price, rrp);
+    }).join('\n\n');
+
+    triggerDownload(all, 'sell-smart-listings-' + platform.toLowerCase().replace(/\s/g, '-') + '.txt');
+    showToast('↓ All ' + lastResults.length + ' listings downloaded!');
+  }
+
+  function triggerDownload(text, filename) {
+    var blob = new Blob([text], { type: 'text/plain' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ── HELPERS ──
+  function doCopy(btn) {
+    navigator.clipboard.writeText(decodeURIComponent(btn.dataset.v)).then(function () {
+      var orig = btn.innerHTML;
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('done');
+      setTimeout(function () {
+        btn.innerHTML = orig;
+        btn.classList.remove('done');
+      }, 2000);
+    }).catch(function () {
+      showErr('Copy failed', 'Clipboard access denied. Try copying manually.');
+    });
+  }
+
+  function setLoad(show, title, sub) {
+    document.getElementById('loadWrap').style.display = show ? 'block' : 'none';
+    if (title) document.getElementById('loadTitle').textContent = title;
+    if (sub) document.getElementById('loadSub').textContent = sub;
+  }
+
+  function setProg(pct) {
+    document.getElementById('progFill').style.width = pct + '%';
+    document.getElementById('progLabel').textContent = pct + '%';
+  }
+
+  function showErr(title, msg) {
+    document.getElementById('errTitle').textContent = title || 'Error';
+    document.getElementById('errText').textContent = msg || '';
+    var b = document.getElementById('errBanner');
+    b.classList.add('show');
+    b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showWarn(title, msg) {
+    document.getElementById('warnTitle').textContent = title || 'Warning';
+    document.getElementById('warnText').textContent = msg || '';
+    document.getElementById('warnBanner').classList.add('show');
+  }
+
+  function hideBanner(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      t.classList.remove('show');
+    }, 2800);
+  }
+
+  // ── INFO MODAL ──
+  function toggleInfo(tab) {
+    var o = document.getElementById('infoOverlay');
+    o.classList.toggle('open');
+    document.body.style.overflow = o.classList.contains('open') ? 'hidden' : '';
+    if (tab && o.classList.contains('open')) switchTab(tab);
+  }
+
+  function closeInfoOutside(e) {
+    if (e.target === document.getElementById('infoOverlay')) toggleInfo();
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.getElementById('infoOverlay').classList.contains('open')) {
+      toggleInfo();
+    }
   });
 
-  document.getElementById('resultsWrap').scrollIntoView({behavior:'smooth',block:'start'});
-}
+  // ── MODAL TABS ──
+  function switchTab(tab) {
+    var panes = { how: 'paneHow', feedback: 'paneFeedback' };
+    var tabs = { how: 'tabHow', feedback: 'tabFeedback' };
 
-// ── DOWNLOAD ──
-function doDownload(btn){
-  var text=decodeURIComponent(btn.dataset.v);
-  var name=(btn.dataset.name||'listing')+'.txt';
-  triggerDownload(text,name);
-  showToast('↓ Listing downloaded!');
-}
-
-function downloadAll(){
-  if(!lastResults.length)return;
-  var all=lastResults.map(function(item,i){
-    var l=item.listing,price=fmtPrice(l.suggestedPrice),rrp=fmtPrice(l.rrp);
-    return '══════════════════════════════\nLISTING '+(i+1)+' — '+platform.toUpperCase()+'\n══════════════════════════════\n'+buildText(l,price,rrp);
-  }).join('\n\n');
-  triggerDownload(all,'sell-smart-listings-'+platform.toLowerCase().replace(/\s/g,'-')+'.txt');
-  showToast('↓ All '+lastResults.length+' listings downloaded!');
-}
-
-function triggerDownload(text,filename){
-  var blob=new Blob([text],{type:'text/plain'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;a.download=filename;
-  document.body.appendChild(a);a.click();
-  document.body.removeChild(a);URL.revokeObjectURL(url);
-}
-
-// ── HELPERS ──
-function doCopy(btn,lbl){
-  navigator.clipboard.writeText(decodeURIComponent(btn.dataset.v)).then(function(){
-    var orig=btn.innerHTML;btn.textContent='✓ Copied!';btn.classList.add('done');
-    setTimeout(function(){btn.innerHTML=orig;btn.classList.remove('done');},2000);
-  }).catch(function(){showErr('Copy failed','Clipboard access denied. Try copying manually.');});
-}
-function setLoad(show,title,sub){
-  document.getElementById('loadWrap').style.display=show?'block':'none';
-  if(title)document.getElementById('loadTitle').textContent=title;
-  if(sub)document.getElementById('loadSub').textContent=sub;
-}
-function setProg(pct){
-  document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('progLabel').textContent=pct+'%';
-}
-function showErr(title,msg){
-  document.getElementById('errTitle').textContent=title||'Error';
-  document.getElementById('errText').textContent=msg||'';
-  var b=document.getElementById('errBanner');b.classList.add('show');
-  b.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-function showWarn(title,msg){
-  document.getElementById('warnTitle').textContent=title||'Warning';
-  document.getElementById('warnText').textContent=msg||'';
-  document.getElementById('warnBanner').classList.add('show');
-}
-function hideBanner(id){document.getElementById(id).classList.remove('show');}
-
-var toastTimer;
-function showToast(msg){
-  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},2800);
-}
-
-// ── INFO MODAL ──
-function toggleInfo(tab){
-  var o=document.getElementById('infoOverlay');
-  o.classList.toggle('open');
-  document.body.style.overflow=o.classList.contains('open')?'hidden':'';
-  if(tab&&o.classList.contains('open')) switchTab(tab);
-}
-function closeInfoOutside(e){
-  if(e.target===document.getElementById('infoOverlay')) toggleInfo();
-}
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'&&document.getElementById('infoOverlay').classList.contains('open')) toggleInfo();
-});
-
-// ── MODAL TABS ──
-function switchTab(tab){
-  var panes={how:'paneHow',feedback:'paneFeedback'};
-  var tabs={how:'tabHow',feedback:'tabFeedback'};
-  Object.keys(panes).forEach(function(k){
-    document.getElementById(panes[k]).classList.toggle('active',k===tab);
-    document.getElementById(tabs[k]).classList.toggle('active',k===tab);
-  });
-}
-
-// ── FEEDBACK ──
-var fbSelectedType='Bug report';
-function selectFbType(btn){
-  document.querySelectorAll('.fb-type').forEach(function(b){b.classList.remove('sel');});
-  btn.classList.add('sel');
-  fbSelectedType=btn.textContent.trim();
-}
-function sendFeedback(){
-  var msg=document.getElementById('fbMsg').value.trim();
-  var name=document.getElementById('fbName').value.trim();
-  if(!msg){
-    document.getElementById('fbMsg').focus();
-    document.getElementById('fbMsg').style.borderColor='#f87171';
-    return;
+    Object.keys(panes).forEach(function (k) {
+      document.getElementById(panes[k]).classList.toggle('active', k === tab);
+      document.getElementById(tabs[k]).classList.toggle('active', k === tab);
+    });
   }
-  document.getElementById('fbMsg').style.borderColor='';
-  var btn=document.getElementById('fbSendBtn');
-  btn.disabled=true; btn.textContent='Opening email…';
-  var subject=encodeURIComponent('[Sell Smart] '+fbSelectedType);
-  var nl='\n';
-  var body=encodeURIComponent(
-    'Feedback type: '+fbSelectedType+nl+
-    (name?'From: '+name+nl:'')+
-    nl+'Message:'+nl+msg+nl+nl+'---'+nl+'Sent via Sell Smart'
-  );
-  var a=document.createElement('a');
-  a.href='mailto:kanke.ishaku@live.com?subject='+subject+'&body='+body;
-  a.target='_blank';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){
-    document.getElementById('fbForm').style.display='none';
-    document.getElementById('fbSent').style.display='block';
-    btn.disabled=false; btn.textContent='Send feedback →';
-  },600);
-}
-function resetFeedback(){
-  document.getElementById('fbForm').style.display='block';
-  document.getElementById('fbSent').style.display='none';
-  document.getElementById('fbMsg').value='';
-  document.getElementById('fbName').value='';
-  document.querySelectorAll('.fb-type').forEach(function(b,i){b.classList.toggle('sel',i===0);});
-  fbSelectedType='Bug report';
-}
+
+  // ── FEEDBACK ──
+  var fbSelectedType = 'Bug report';
+
+  function selectFbType(btn) {
+    document.querySelectorAll('.fb-type').forEach(function (b) {
+      b.classList.remove('sel');
+    });
+    btn.classList.add('sel');
+    fbSelectedType = btn.textContent.trim();
+  }
+
+  function sendFeedback() {
+    var msg = document.getElementById('fbMsg').value.trim();
+    var name = document.getElementById('fbName').value.trim();
+
+    if (!msg) {
+      document.getElementById('fbMsg').focus();
+      document.getElementById('fbMsg').style.borderColor = '#f87171';
+      return;
+    }
+
+    document.getElementById('fbMsg').style.borderColor = '';
+    var btn = document.getElementById('fbSendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Opening email…';
+
+    var subject = encodeURIComponent('[Sell Smart] ' + fbSelectedType);
+    var nl = '\n';
+    var body = encodeURIComponent(
+      'Feedback type: ' + fbSelectedType + nl +
+      (name ? 'From: ' + name + nl : '') +
+      nl + 'Message:' + nl + msg + nl + nl + '---' + nl + 'Sent via Sell Smart'
+    );
+
+    var a = document.createElement('a');
+    a.href = 'mailto:kanke.ishaku@live.com?subject=' + subject + '&body=' + body;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(function () {
+      document.getElementById('fbForm').style.display = 'none';
+      document.getElementById('fbSent').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Send feedback →';
+    }, 600);
+  }
+
+  function resetFeedback() {
+    document.getElementById('fbForm').style.display = 'block';
+    document.getElementById('fbSent').style.display = 'none';
+    document.getElementById('fbMsg').value = '';
+    document.getElementById('fbName').value = '';
+    document.querySelectorAll('.fb-type').forEach(function (b, i) {
+      b.classList.toggle('sel', i === 0);
+    });
+    fbSelectedType = 'Bug report';
+  }
 </script>
 </body>
 </html>
