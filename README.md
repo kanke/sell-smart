@@ -78,23 +78,47 @@ Each grouped item becomes one listing.
 | Backend proxy | Vercel Serverless Function |
 | Hosting | GitHub Pages + Vercel |
 
-## How to run
+---
 
-### Option 1 — Frontend on GitHub Pages + backend on Vercel
-This is the recommended setup.
+## Quickstart for judges
 
-1. Push this repo to GitHub
-2. Deploy the repo to **Vercel**
-3. Add your Gemini API key in Vercel as an environment variable:
-    - `GEMINI_API_KEY=your_new_key_here`
-4. Make sure the frontend calls your Vercel API endpoint
-5. Enable GitHub Pages for the frontend if desired
+> Everything runs in the browser. No database. No login. No data stored.
 
-### Option 2 — Deploy everything from the same repo
-You can use the same GitHub repo for both:
+**Option 1 — Use the live demo (fastest)**
+```
+https://kanke.github.io/sell-smart/
+```
 
-- **GitHub Pages** serves `index.html`
-- **Vercel** serves the secure API proxy in `api/gemini.js`
+**Option 2 — Run locally**
+```bash
+git clone https://github.com/kanke/sell-smart.git
+cd sell-smart
+# Open index.html directly in your browser — no build step needed
+open index.html
+```
+> Note: Running locally requires the API proxy to be deployed (see below), or point `API_BASE` in `index.html` to your own Vercel/Cloud Run deployment.
+
+**Option 3 — Deploy your own copy**
+
+1. Fork this repo
+2. Deploy to Vercel — `api/gemini.js` auto-deploys as a serverless function
+3. Set environment variable in Vercel: `GEMINI_API_KEY=your_key_here`
+4. Enable GitHub Pages for `index.html`
+5. Update `API_BASE` in `index.html` to your Vercel URL
+
+---
+
+## Google Cloud integration
+
+Sell Smart uses the **Google AI REST API** (`generativelanguage.googleapis.com`) — the same underlying interface as the official Google GenAI SDK — to call **Gemini 2.5 Flash**, a Google Cloud AI service.
+
+The API is called server-side via a serverless proxy to keep the key secure. The proxy is deployable to both **Vercel** and **Google Cloud Run**.
+
+**Relevant code:**
+- Frontend API call: [`index.html#L684`](https://github.com/kanke/sell-smart/blob/d664b230e532cc715d671fb1972f2af12fb9e79d/index.html#L684)
+- Server-side proxy: [`api/gemini.js`](https://github.com/kanke/sell-smart/blob/main/api/gemini.js)
+
+---
 
 ## How the AI flow works
 
@@ -132,3 +156,12 @@ You can use the same GitHub repo for both:
       }
 
 4. UI renders one final resale listing per grouped item
+
+```
+---
+
+## Privacy
+
+All image processing happens **in the browser**. Photos are compressed using the Canvas API and sent only to the Gemini API via the secure proxy. No images are stored anywhere. No user data is collected.
+
+---
