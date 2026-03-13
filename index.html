@@ -215,7 +215,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     </div>
     <h3>Drop images here or click to browse</h3>
     <p>Upload photos of items you want to sell. PNG, JPG, or WEBP</p>
-    <div class="upload-hint">ⓘ All images auto-compressed to 1MB each</div>
+    <div class="upload-hint">ⓘ All images auto-compressed to 1MB each &nbsp;·&nbsp; Max 20 photos per batch</div>
   </div>
 
   <!-- PHOTO PREVIEWS -->
@@ -271,7 +271,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 <script>
 // ── CONFIG ──
 const GEMINI_KEY = 'AIzaSyCYv1ukfANZKZaPRTbcTaVu1WHxqHrC6Zo';
-const MODEL = 'gemini-1.5-flash';
+const MODEL = 'gemini-1.5-flash-latest';
 let files = [], platform = 'Vinted', currency = 'GBP';
 function sym() { return {GBP:'£',EUR:'€',USD:'$'}[currency]||'£'; }
 
@@ -314,6 +314,7 @@ uploadZone.addEventListener('drop', function(e) {
 
 function handleFiles(incoming) {
   for (const f of Array.from(incoming)) {
+    if (files.length >= 20) { showErr('Maximum 20 photos per batch. Remove some to add more.'); break; }
     if (f.type.startsWith('image/') && !files.find(x => x.name===f.name && x.size===f.size)) {
       files.push(f);
     }
