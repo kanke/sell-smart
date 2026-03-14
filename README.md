@@ -156,7 +156,6 @@ The API is called server-side via a serverless proxy to keep the key secure. The
       }
 
 4. UI renders one final resale listing per grouped item
-
 ```
 ---
 
